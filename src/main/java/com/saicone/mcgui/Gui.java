@@ -24,6 +24,7 @@
 package com.saicone.mcgui;
 
 import com.saicone.mcgui.impl.GuiBuilderImpl;
+import com.saicone.mcgui.util.PluginSource;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -243,6 +244,10 @@ public interface Gui {
     }
 
     final class Registry {
+
+        static {
+            GuiListener.INSTANCE.registerEvents(PluginSource.unchecked());
+        }
 
         private static final Map<UUID, GuiSession> SESSIONS = new HashMap<>();
 

@@ -37,9 +37,21 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-public class GuiListener implements Listener {
+public final class GuiListener implements Listener {
 
-    public void registerEvents(@NotNull Plugin plugin) {
+    public static final GuiListener INSTANCE = new GuiListener();
+
+    private volatile boolean registered = false;
+
+    GuiListener() {
+    }
+
+    public synchronized void registerEvents(@NotNull Plugin plugin) {
+        if (registered) {
+            return;
+        }
+        registered = true;
+
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         try {
             Class.forName("io.papermc.paper.event.player.AsyncChatDecorateEvent");

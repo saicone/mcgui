@@ -23,6 +23,7 @@
  */
 package com.saicone.mcgui;
 
+import com.saicone.mcgui.util.PluginSource;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -36,64 +37,28 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.jar.JarFile;
 
 public class GuiSession implements InventoryHolder {
 
-    public static Plugin PLUGIN;
-    private static boolean INIT;
-    private static final BiFunction<GuiSession, String, Component> PARSER = (session, string) -> {
+    public static final BiFunction<GuiSession, String, Component> PARSER = (session, string) -> {
         return MiniMessage.miniMessage().deserialize(PlaceholderAPI.setPlaceholders(session.agent, string));
     };
-
-    @NotNull
-    private static Plugin plugin() {
-        if (!INIT && PLUGIN == null) {
-            INIT = true;
-            try {
-                final CodeSource codeSource = GuiSession.class.getProtectionDomain().getCodeSource();
-                final File file = new File(codeSource.getLocation().toURI());
-                try (JarFile jar = new JarFile(file)) {
-                    final InputStream input = jar.getInputStream(jar.stream().filter(entry -> entry.getName().equals("plugin.yml")).findFirst().orElseThrow());
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
-                        final String pluginName = reader.lines()
-                                .filter(line -> line.startsWith("name:"))
-                                .map(line -> line.substring("name:".length()).split("#", 2)[0].trim())
-                                .findFirst()
-                                .orElseThrow();
-                        PLUGIN = Bukkit.getPluginManager().getPlugin(pluginName);
-                    }
-                }
-            } catch (Throwable ignored) { }
-        }
-        if (PLUGIN == null) {
-            throw new IllegalStateException("GuiSession doesn't have a declared plugin, make sure to use 'GuiSession.PLUGIN = this' on your plugin initialization");
-        }
-        return PLUGIN;
-    }
 
     private static void run(@NotNull Runnable runnable) {
         if (Bukkit.isPrimaryThread()) {
             runnable.run();
         } else {
-            Bukkit.getScheduler().runTask(plugin(), runnable);
+            Bukkit.getScheduler().runTask(PluginSource.unchecked(), runnable);
         }
     }
 
