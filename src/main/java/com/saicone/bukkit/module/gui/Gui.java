@@ -256,6 +256,11 @@ public interface Gui {
             return session;
         }
 
+        @Nullable
+        public static GuiSession getOrNull(@NotNull Player player) {
+            return SESSIONS.get(player.getUniqueId());
+        }
+
         public static void remove(@NotNull Player player) {
             SESSIONS.remove(player.getUniqueId());
         }

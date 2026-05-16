@@ -23,16 +23,31 @@
  */
 package com.saicone.bukkit.module.gui;
 
+import io.papermc.paper.event.player.AsyncChatDecorateEvent;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 public class GuiListener implements Listener {
+
+    public void registerEvents(@NotNull Plugin plugin) {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        try {
+            Class.forName("io.papermc.paper.event.player.AsyncChatDecorateEvent");
+            plugin.getServer().getPluginManager().registerEvents(new PaperEvents(), plugin);
+        } catch (ClassNotFoundException e) {
+            plugin.getServer().getPluginManager().registerEvents(new BukkitEvents(), plugin);
+        }
+    }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onClick(InventoryClickEvent event) {
@@ -69,5 +84,44 @@ public class GuiListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     private void onQuit(PlayerQuitEvent event) {
         Gui.Registry.remove(event.getPlayer());
+    }
+
+    @SuppressWarnings("deprecation")
+    private static final class BukkitEvents implements Listener {
+
+        @EventHandler(priority = EventPriority.LOWEST)
+        private void onPlainChat(AsyncPlayerChatEvent event) {
+            final GuiSession session = Gui.Registry.getOrNull(event.getPlayer());
+            if (session != null && session.consumePlainText(event.getMessage())) {
+                event.setCancelled(true);
+            }
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST)
+        private void onDecoratedChat(AsyncPlayerChatEvent event) {
+            final GuiSession session = Gui.Registry.getOrNull(event.getPlayer());
+            if (session != null && session.consumeDecoratedText(event.getMessage())) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    private static final class PaperEvents implements Listener {
+
+        @EventHandler(priority = EventPriority.LOWEST)
+        private void onPlainChat(AsyncChatDecorateEvent event) {
+            final GuiSession session = Gui.Registry.getOrNull(event.player());
+            if (session != null && session.consumePlainText(event.result())) {
+                event.setCancelled(true);
+            }
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST)
+        private void onDecoratedChat(AsyncChatEvent event) {
+            final GuiSession session = Gui.Registry.getOrNull(event.getPlayer());
+            if (session != null && session.consumeDecoratedText(event.message())) {
+                event.setCancelled(true);
+            }
+        }
     }
 }

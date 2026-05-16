@@ -49,3 +49,4 @@ Usage of Adventure API for text-related features.
 * title computation based on metadata (ideal for textured guis using glyphs)
 * global actions
 * per slot actions
+* built-in chat text input support (compatible with plugins that parse emojis in chat)

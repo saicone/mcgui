@@ -26,6 +26,8 @@ package com.saicone.bukkit.module.gui;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -48,7 +50,9 @@ import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.jar.JarFile;
 
 public class GuiSession implements InventoryHolder {
@@ -101,6 +105,9 @@ public class GuiSession implements InventoryHolder {
     private Gui gui;
     private Gui.Metadata meta;
     private Inventory inventory;
+
+    private final AtomicReference<Consumer<String>> plainTextConsumer = new AtomicReference<>();
+    private final AtomicReference<Consumer<Component>> decoratedTextConsumer = new AtomicReference<>();
 
     public GuiSession(@NotNull Player agent) {
         this.agent = agent;
@@ -243,5 +250,51 @@ public class GuiSession implements InventoryHolder {
         if (gui instanceof AbstractGui) {
             ((AbstractGui) gui).execute(this, event);
         }
+    }
+
+    public void listenPlainChat(@NotNull Consumer<String> consumer) {
+        this.plainTextConsumer.set(consumer);
+        silentClose();
+    }
+
+    public void listenDecoratedChat(@NotNull Consumer<Component> consumer) {
+        this.decoratedTextConsumer.set(consumer);
+        silentClose();
+    }
+
+    public boolean consumePlainText(@NotNull String input) {
+        final Consumer<String> consumer = plainTextConsumer.getAndSet(null);
+        if (consumer != null) {
+            consumer.accept(input);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean consumePlainText(@NotNull Component input) {
+        final Consumer<String> consumer = plainTextConsumer.getAndSet(null);
+        if (consumer != null) {
+            consumer.accept(PlainTextComponentSerializer.plainText().serialize(input));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean consumeDecoratedText(@NotNull String input) {
+        final Consumer<Component> consumer = decoratedTextConsumer.getAndSet(null);
+        if (consumer != null) {
+            consumer.accept(LegacyComponentSerializer.legacySection().deserialize(input));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean consumeDecoratedText(@NotNull Component input) {
+        final Consumer<Component> consumer = decoratedTextConsumer.getAndSet(null);
+        if (consumer != null) {
+            consumer.accept(input);
+            return true;
+        }
+        return false;
     }
 }
