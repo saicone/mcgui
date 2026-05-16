@@ -32,9 +32,19 @@ import java.util.List;
 public abstract class PageableItem<E> implements GuiItem {
 
     private final char id;
+    private final boolean independent;
 
-    protected PageableItem(char id) {
+    public PageableItem(char id) {
+        this(id, false);
+    }
+
+    public PageableItem(char id, boolean independent) {
         this.id = id;
+        this.independent = independent;
+    }
+
+    public boolean isIndependent() {
+        return independent;
     }
 
     public char getId() {
@@ -52,7 +62,7 @@ public abstract class PageableItem<E> implements GuiItem {
     @NotNull
     public GuiItem createNextPage(@NotNull GuiItem active, @NotNull GuiItem inactive) {
         final GuiItem itemA = active.executes((session, event) -> {
-            session.<PageableGui.Metadata>getMeta().setPage(page -> page + 1);
+            session.<PageableGui.Metadata>getMeta().setPage(this, page -> page + 1);
             session.update();
         });
         return VariantItem.valueOf(PageableItem.this::hasNext, itemA, inactive);
@@ -66,16 +76,16 @@ public abstract class PageableItem<E> implements GuiItem {
     @NotNull
     public GuiItem createPreviousPage(@NotNull GuiItem active, @NotNull GuiItem inactive) {
         final GuiItem itemA = active.executes((session, event) -> {
-            session.<PageableGui.Metadata>getMeta().setPage(page -> page - 1);
+            session.<PageableGui.Metadata>getMeta().setPage(this, page -> page - 1);
             session.update();
         });
-        return VariantItem.valueOf(session -> session.<PageableGui.Metadata>getMeta().getPage() > 0, itemA, inactive);
+        return VariantItem.valueOf(session -> session.<PageableGui.Metadata>getMeta().getPage(this) > 0, itemA, inactive);
     }
 
     public boolean hasNext(@NotNull GuiSession session) {
         final PageableGui.Metadata metadata = session.getMeta();
 
-        return metadata.getItemList(this).size() > metadata.getAmount(getId()) * (metadata.getPage() + 1);
+        return metadata.getItemList(this).size() > metadata.getAmount(getId()) * (metadata.getPage(this) + 1);
     }
 
     @Override
@@ -87,7 +97,7 @@ public abstract class PageableItem<E> implements GuiItem {
             return Static.EMPTY_ITEM;
         }
 
-        index += metadata.getAmount(getId()) * metadata.getPage();
+        index += metadata.getAmount(getId()) * metadata.getPage(this);
         final List<E> list = metadata.getItemList(this);
         if (index >= list.size()) {
             return Static.EMPTY_ITEM;
@@ -109,7 +119,7 @@ public abstract class PageableItem<E> implements GuiItem {
             return;
         }
 
-        index += metadata.getAmount(getId()) * metadata.getPage();
+        index += metadata.getAmount(getId()) * metadata.getPage(this);
         final List<E> list = metadata.getItemList(this);
         if (index >= list.size()) {
             return;
@@ -128,7 +138,7 @@ public abstract class PageableItem<E> implements GuiItem {
         final PageableGui.Metadata metadata = session.getMeta();
 
         final int amount = metadata.getAmount(getId());
-        final int fromIndex = amount * metadata.getPage();
+        final int fromIndex = amount * metadata.getPage(this);
 
         final List<E> list = metadata.getItemList(this);
         if (fromIndex >= list.size()) {

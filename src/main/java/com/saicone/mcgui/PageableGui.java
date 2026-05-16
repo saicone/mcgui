@@ -53,6 +53,7 @@ public abstract class PageableGui extends LayoutGui {
     public static class Metadata extends LayoutGui.Metadata {
 
         int page = 0;
+        private final Map<PageableItem<?>, Integer> itemPage = new HashMap<>();
         private final Map<PageableItem<?>, List<?>> itemList = new HashMap<>();
 
         public Metadata(@NotNull GuiSession session, @NotNull PageableGui gui) {
@@ -60,6 +61,23 @@ public abstract class PageableGui extends LayoutGui {
         }
 
         public int getPage() {
+            return page;
+        }
+
+        public int getPage(@NotNull PageableItem<?> item) {
+            if (item.isIndependent()) {
+                return getItemPage(item);
+            } else {
+                return getPage();
+            }
+        }
+
+        private int getItemPage(@NotNull PageableItem<?> item) {
+            Integer page = this.itemPage.get(item);
+            if (page == null) {
+                page = 0;
+                this.itemPage.put(item, page);
+            }
             return page;
         }
 
@@ -75,11 +93,31 @@ public abstract class PageableGui extends LayoutGui {
         }
 
         public void setPage(int page) {
-            this.page = page;
+            this.page = Math.max(0, page);
         }
 
         public void setPage(@NotNull UnaryOperator<Integer> operator) {
-            this.page = operator.apply(this.page);
+            setPage(operator.apply(getPage()));
+        }
+
+        public void setPage(@NotNull PageableItem<?> item, int page) {
+            if (item.isIndependent()) {
+                setItemPage(item, page);
+            } else {
+                setPage(page);
+            }
+        }
+
+        public void setPage(@NotNull PageableItem<?> item, @NotNull UnaryOperator<Integer> operator) {
+            if (item.isIndependent()) {
+                setItemPage(item, operator.apply(getItemPage(item)));
+            } else {
+                setPage(operator);
+            }
+        }
+
+        private void setItemPage(@NotNull PageableItem<?> item, int page) {
+            this.itemPage.put(item, Math.max(0, page));
         }
     }
 }
