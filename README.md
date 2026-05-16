@@ -44,6 +44,7 @@ Usage of Adventure API for text-related features.
 * layout gui (ideal for multiple filler items)
 * paginated gui
 * independent pages support
+* custom scrolling support
 * gui read/write access (ideal for guis that can accept input items from players)
 * gui session metadata
 * title computation based on metadata (ideal for textured guis using glyphs)

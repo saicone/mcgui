@@ -21,9 +21,9 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-package com.saicone.bukkit.module.gui;
+package com.saicone.mcgui;
 
-import com.saicone.bukkit.module.gui.util.InventoryCreator;
+import com.saicone.mcgui.util.InventoryCreator;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;

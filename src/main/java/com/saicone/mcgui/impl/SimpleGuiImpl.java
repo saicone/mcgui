@@ -21,11 +21,11 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-package com.saicone.bukkit.module.gui.impl;
+package com.saicone.mcgui.impl;
 
-import com.saicone.bukkit.module.gui.GuiItem;
-import com.saicone.bukkit.module.gui.GuiSession;
-import com.saicone.bukkit.module.gui.SimpleGui;
+import com.saicone.mcgui.GuiItem;
+import com.saicone.mcgui.GuiSession;
+import com.saicone.mcgui.SimpleGui;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;

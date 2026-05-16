@@ -21,7 +21,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-package com.saicone.bukkit.module.gui.io;
+package com.saicone.mcgui.io;
 
 public class GuiReader {
 }
