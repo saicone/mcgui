@@ -23,7 +23,6 @@
  */
 package com.saicone.bukkit.module.gui;
 
-import com.cryptomorin.xseries.inventory.XInventoryView;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -96,6 +95,8 @@ public class GuiSession implements InventoryHolder {
 
     private final Player agent;
 
+    private volatile GuiView view;
+
     private Gui last;
     private Gui gui;
     private Gui.Metadata meta;
@@ -108,6 +109,18 @@ public class GuiSession implements InventoryHolder {
     @NotNull
     public Player getAgent() {
         return agent;
+    }
+
+    @NotNull
+    public GuiView getView() {
+        if (view == null) {
+            synchronized (this) {
+                if (view == null) {
+                    view = new GuiView(agent.getOpenInventory());
+                }
+            }
+        }
+        return view;
     }
 
     @NotNull
@@ -170,7 +183,7 @@ public class GuiSession implements InventoryHolder {
     public void close(boolean send) {
         if (send) {
             agent.closeInventory();
-        } else if (XInventoryView.of(agent.getOpenInventory()).getTopInventory().getHolder() == this) {
+        } else if (getView().getTopInventory().getHolder() == this) {
             if (gui instanceof AbstractGui) {
                 ((AbstractGui) gui).execute(this, new InventoryCloseEvent(agent.getOpenInventory()));
             }

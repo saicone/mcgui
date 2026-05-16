@@ -23,7 +23,6 @@
  */
 package com.saicone.bukkit.module.gui;
 
-import com.cryptomorin.xseries.XMaterial;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
@@ -48,13 +47,13 @@ public interface GuiItem {
     }
 
     @NotNull
-    static GuiItem valueOf(@NotNull XMaterial display) {
-        return valueOf(display.parseItem());
+    static GuiItem valueOf(@NotNull Material display) {
+        return valueOf(new ItemStack(display));
     }
 
     @NotNull
-    static GuiItem valueOf(@NotNull XMaterial display, @NotNull Component name) {
-        final ItemStack item = display.parseItem();
+    static GuiItem valueOf(@NotNull Material display, @NotNull Component name) {
+        final ItemStack item = new ItemStack(display);
         final ItemMeta meta = item.getItemMeta();
 
         meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(name));
@@ -64,8 +63,8 @@ public interface GuiItem {
     }
 
     @NotNull
-    static GuiItem valueOf(@NotNull XMaterial display, @NotNull Component name, @NotNull List<Component> lore) {
-        final ItemStack item = display.parseItem();
+    static GuiItem valueOf(@NotNull Material display, @NotNull Component name, @NotNull List<Component> lore) {
+        final ItemStack item = new ItemStack(display);
         final ItemMeta meta = item.getItemMeta();
 
         meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(name));
@@ -113,8 +112,8 @@ public interface GuiItem {
     }
 
     @NotNull
-    static GuiItem valueOf(@NotNull XMaterial display, @NotNull BiConsumer<GuiSession, InventoryClickEvent> action) {
-        return valueOf(display.parseItem(), action);
+    static GuiItem valueOf(@NotNull Material display, @NotNull BiConsumer<GuiSession, InventoryClickEvent> action) {
+        return valueOf(new ItemStack(display), action);
     }
 
     @NotNull

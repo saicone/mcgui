@@ -23,8 +23,6 @@
  */
 package com.saicone.bukkit.module.gui;
 
-import com.cryptomorin.xseries.inventory.XInventoryView;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -50,9 +48,8 @@ public class GuiListener implements Listener {
         final InventoryHolder holder = event.getInventory().getHolder();
         if (holder instanceof GuiSession) {
             final GuiSession session = (GuiSession) holder;
-            final Player player = (Player) event.getWhoClicked();
             for (int slot : event.getRawSlots()) {
-                if (slot < XInventoryView.of(player.getOpenInventory()).getTopInventory().getSize()) {
+                if (slot < session.getView().getTopInventory().getSize()) {
                     session.execute(event);
                 }
                 return;
@@ -69,7 +66,7 @@ public class GuiListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     private void onQuit(PlayerQuitEvent event) {
         Gui.Registry.remove(event.getPlayer());
     }
