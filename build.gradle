@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'idea'
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = uri('https://central.sonatype.com/repository/maven-snapshots') }
+    maven { url = uri('https://jitpack.io') }
+    maven { url = uri('https://repo.papermc.io/repository/maven-public/') }
+    maven { url = uri('https://libraries.minecraft.net') }
+    maven { url = uri('https://repo.codemc.io/repository/nms/') }
+    maven { url = uri('https://repo.extendedclip.com/content/repositories/placeholderapi/') }
+
+}
+
+configurations {
+    compileOnlyWith
+}
+
+dependencies {
+    compileOnlyWith 'io.papermc.paper:paper-api:26.1.2.build.63-stable'
+    compileOnly 'net.kyori:adventure-api:4.26.1'
+    compileOnly 'net.kyori:adventure-platform-bukkit:4.4.1'
+    compileOnly 'me.clip:placeholderapi:2.11.7'
+    compileOnly 'com.github.cryptomorin:XSeries:13.7.0'
+
+    compileOnly 'org.jetbrains:annotations:26.1.0'
+
+    compileOnly fileTree(dir: 'libs', includes: ['*.jar'])
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+}
+
+tasks.withType(JavaCompile).configureEach {
+    classpath += configurations.compileOnlyWith
+    options.release = 21
+}
