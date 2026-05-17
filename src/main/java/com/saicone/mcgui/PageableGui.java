@@ -86,7 +86,7 @@ public abstract class PageableGui extends LayoutGui {
         public <E> List<E> getItemList(@NotNull PageableItem<E> item) {
             List<?> list = itemList.get(item);
             if (list == null) {
-                list = item.createList(getSession());
+                list = item.getGrid().transform(item.createList(getSession()));
                 itemList.put(item, list);
             }
             return (List<E>) list;

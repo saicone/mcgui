@@ -33,14 +33,24 @@ public abstract class PageableItem<E> implements GuiItem {
 
     private final char id;
     private final boolean independent;
+    private final PageGrid grid;
 
     public PageableItem(char id) {
         this(id, false);
     }
 
     public PageableItem(char id, boolean independent) {
+        this(id, independent, PageGrid.DEFAULT);
+    }
+
+    public PageableItem(char id, @NotNull PageGrid grid) {
+        this(id, false, grid);
+    }
+
+    public PageableItem(char id, boolean independent, @NotNull PageGrid grid) {
         this.id = id;
         this.independent = independent;
+        this.grid = grid;
     }
 
     public boolean isIndependent() {
@@ -49,6 +59,11 @@ public abstract class PageableItem<E> implements GuiItem {
 
     public char getId() {
         return id;
+    }
+
+    @NotNull
+    public PageGrid getGrid() {
+        return grid;
     }
 
     @NotNull
@@ -90,20 +105,10 @@ public abstract class PageableItem<E> implements GuiItem {
 
     @Override
     public @NotNull ItemStack display(@NotNull GuiSession session, int slot) {
-        final PageableGui.Metadata metadata = session.getMeta();
-
-        int index = metadata.getIndex(slot);
-        if (index < 0) {
+        final E element = getGrid().element(this, session, slot);
+        if (element == null) {
             return Static.EMPTY_ITEM;
         }
-
-        index += metadata.getAmount(getId()) * metadata.getPage(this);
-        final List<E> list = metadata.getItemList(this);
-        if (index >= list.size()) {
-            return Static.EMPTY_ITEM;
-        }
-
-        final E element = list.get(index);
         return display(session, slot, element);
     }
 
@@ -112,20 +117,10 @@ public abstract class PageableItem<E> implements GuiItem {
 
     @Override
     public void onClick(@NotNull GuiSession session, @NotNull InventoryClickEvent event) {
-        final PageableGui.Metadata metadata = session.getMeta();
-
-        int index = metadata.getIndex(event.getSlot());
-        if (index < 0) {
+        final E element = getGrid().element(this, session, event.getSlot());
+        if (element == null) {
             return;
         }
-
-        index += metadata.getAmount(getId()) * metadata.getPage(this);
-        final List<E> list = metadata.getItemList(this);
-        if (index >= list.size()) {
-            return;
-        }
-
-        final E element = list.get(index);
         onClick(session, event, element);
     }
 
@@ -135,18 +130,6 @@ public abstract class PageableItem<E> implements GuiItem {
 
     @NotNull
     public List<E> currentList(@NotNull GuiSession session) {
-        final PageableGui.Metadata metadata = session.getMeta();
-
-        final int amount = metadata.getAmount(getId());
-        final int fromIndex = amount * metadata.getPage(this);
-
-        final List<E> list = metadata.getItemList(this);
-        if (fromIndex >= list.size()) {
-            return List.of();
-        }
-
-        final int toIndex = Math.min(list.size(), fromIndex + amount);
-
-        return list.subList(fromIndex, toIndex);
+        return getGrid().subList(this, session);
     }
 }
