@@ -75,12 +75,7 @@ public final class GuiListener implements Listener {
         final InventoryHolder holder = event.getInventory().getHolder();
         if (holder instanceof GuiSession) {
             final GuiSession session = (GuiSession) holder;
-            for (int slot : event.getRawSlots()) {
-                if (slot < session.getView().getTopInventory().getSize()) {
-                    session.execute(event);
-                }
-                return;
-            }
+            session.execute(event);
         }
     }
 

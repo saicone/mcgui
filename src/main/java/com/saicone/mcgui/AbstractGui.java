@@ -191,8 +191,13 @@ public abstract class AbstractGui implements Gui {
     }
 
     public void execute(@NotNull GuiSession session, @NotNull InventoryDragEvent event) {
-        if (has(Flag.READ_ONLY) && !(event.getInventory() instanceof PlayerInventory)) {
-            event.setCancelled(true);
+        if (has(Flag.READ_ONLY)) {
+            for (int slot : event.getRawSlots()) {
+                if (slot < session.getInventory().getSize()) {
+                    event.setCancelled(true);
+                    break;
+                }
+            }
         }
     }
 }
