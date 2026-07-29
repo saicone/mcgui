@@ -101,8 +101,9 @@ public class GuiSession implements InventoryHolder {
     }
 
     @NotNull
-    public Gui getGui() {
-        return gui;
+    @SuppressWarnings("unchecked")
+    public <T extends Gui> T getGui() {
+        return (T) gui;
     }
 
     @NotNull
