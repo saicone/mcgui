@@ -54,7 +54,7 @@ public abstract class LayoutGui extends AbstractGui {
     }
 
     @Override
-    protected @Nullable GuiItem getItem(@NotNull GuiSession session, int slot) {
+    public @Nullable GuiItem getItem(@NotNull GuiSession session, int slot) {
         return super.getItem(session, meta(session).getId(slot));
     }
 

@@ -90,7 +90,7 @@ public abstract class AbstractGui implements Gui {
     }
 
     @Nullable
-    protected GuiItem getItem(@NotNull GuiSession session, int slot) {
+    public GuiItem getItem(@NotNull GuiSession session, int slot) {
         return items.get(slot);
     }
 
