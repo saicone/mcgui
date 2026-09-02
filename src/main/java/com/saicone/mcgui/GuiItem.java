@@ -53,26 +53,26 @@ public interface GuiItem {
 
     @NotNull
     static GuiItem valueOf(@NotNull Material display, @NotNull Component name) {
-        final ItemStack item = new ItemStack(display);
-        final ItemMeta meta = item.getItemMeta();
-
-        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(name));
-
-        item.setItemMeta(meta);
-        return valueOf(item);
+        return valueOf(display, name, List.of());
     }
 
     @NotNull
     static GuiItem valueOf(@NotNull Material display, @NotNull Component name, @NotNull List<Component> lore) {
-        final ItemStack item = new ItemStack(display);
+        return valueOf(new ItemStack(display), name, lore);
+    }
+
+    @NotNull
+    static GuiItem valueOf(@NotNull ItemStack item, @NotNull Component name, @NotNull List<Component> lore) {
         final ItemMeta meta = item.getItemMeta();
 
         meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(name));
-        final List<String> list = new ArrayList<>();
-        for (Component line : lore) {
-            list.add(LegacyComponentSerializer.legacySection().serialize(line));
+        if (!lore.isEmpty()) {
+            final List<String> list = new ArrayList<>();
+            for (Component line : lore) {
+                list.add(LegacyComponentSerializer.legacySection().serialize(line));
+            }
+            meta.setLore(list);
         }
-        meta.setLore(list);
 
         item.setItemMeta(meta);
         return valueOf(item);
