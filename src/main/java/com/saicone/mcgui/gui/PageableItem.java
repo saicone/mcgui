@@ -21,8 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.saicone.mcgui;
+package com.saicone.mcgui.gui;
 
+import com.saicone.mcgui.session.GuiSession;
+import com.saicone.mcgui.grid.PageGrid;
+import com.saicone.mcgui.item.GuiItem;
+import com.saicone.mcgui.item.PageableGui;
+import com.saicone.mcgui.item.VariantItem;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;

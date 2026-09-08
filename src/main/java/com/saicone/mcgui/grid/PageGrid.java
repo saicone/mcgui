@@ -22,9 +22,10 @@
  * SOFTWARE.
  */
 
-package com.saicone.mcgui;
+package com.saicone.mcgui.grid;
 
-import com.saicone.mcgui.grid.FilledGrid;
+import com.saicone.mcgui.session.GuiSession;
+import com.saicone.mcgui.gui.PageableItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

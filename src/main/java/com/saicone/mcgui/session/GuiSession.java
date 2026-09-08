@@ -21,8 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.saicone.mcgui;
+package com.saicone.mcgui.session;
 
+import com.saicone.mcgui.gui.LayoutGui;
+import com.saicone.mcgui.gui.AbstractGui;
+import com.saicone.mcgui.gui.Gui;
 import com.saicone.mcgui.util.PluginSource;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;

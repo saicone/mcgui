@@ -21,8 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.saicone.mcgui;
+package com.saicone.mcgui.item;
 
+import com.saicone.mcgui.session.GuiSession;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
@@ -190,7 +191,7 @@ public interface GuiItem {
 
     class Static {
 
-        static final ItemStack EMPTY_ITEM = new ItemStack(Material.AIR);
+        public static final ItemStack EMPTY_ITEM = new ItemStack(Material.AIR);
         private static final GuiItem EMPTY = new GuiItem() {
             @Override
             public @NotNull ItemStack display(@NotNull GuiSession session, int slot) {

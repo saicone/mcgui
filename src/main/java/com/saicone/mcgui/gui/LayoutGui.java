@@ -21,8 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.saicone.mcgui;
+package com.saicone.mcgui.gui;
 
+import com.saicone.mcgui.item.GuiItem;
+import com.saicone.mcgui.session.GuiSession;
 import com.saicone.mcgui.util.InventoryCreator;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryType;

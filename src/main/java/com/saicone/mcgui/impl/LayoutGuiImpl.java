@@ -23,9 +23,9 @@
  */
 package com.saicone.mcgui.impl;
 
-import com.saicone.mcgui.GuiItem;
-import com.saicone.mcgui.GuiSession;
-import com.saicone.mcgui.LayoutGui;
+import com.saicone.mcgui.item.GuiItem;
+import com.saicone.mcgui.session.GuiSession;
+import com.saicone.mcgui.gui.LayoutGui;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;

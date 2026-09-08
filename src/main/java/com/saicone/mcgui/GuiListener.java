@@ -23,6 +23,8 @@
  */
 package com.saicone.mcgui;
 
+import com.saicone.mcgui.gui.Gui;
+import com.saicone.mcgui.session.GuiSession;
 import io.papermc.paper.event.player.AsyncChatDecorateEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.event.EventHandler;

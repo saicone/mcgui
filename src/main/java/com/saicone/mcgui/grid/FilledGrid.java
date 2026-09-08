@@ -24,10 +24,9 @@
 
 package com.saicone.mcgui.grid;
 
-import com.saicone.mcgui.GuiSession;
-import com.saicone.mcgui.PageGrid;
-import com.saicone.mcgui.PageableGui;
-import com.saicone.mcgui.PageableItem;
+import com.saicone.mcgui.session.GuiSession;
+import com.saicone.mcgui.item.PageableGui;
+import com.saicone.mcgui.gui.PageableItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

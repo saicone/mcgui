@@ -21,8 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.saicone.mcgui;
+package com.saicone.mcgui.item;
 
+import com.saicone.mcgui.session.GuiSession;
+import com.saicone.mcgui.gui.LayoutGui;
+import com.saicone.mcgui.gui.PageableItem;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
