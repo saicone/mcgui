@@ -24,6 +24,7 @@
 package com.saicone.mcgui.gui;
 
 import com.saicone.mcgui.GuiListener;
+import com.saicone.mcgui.session.AbstractGuiSession;
 import com.saicone.mcgui.session.GuiSession;
 import com.saicone.mcgui.impl.GuiBuilderImpl;
 import com.saicone.mcgui.item.GuiItem;
@@ -258,7 +259,7 @@ public interface Gui {
         public static GuiSession get(@NotNull Player player) {
             GuiSession session = SESSIONS.get(player.getUniqueId());
             if (session == null) {
-                session = new GuiSession(player);
+                session = new AbstractGuiSession(player) { };
                 SESSIONS.put(player.getUniqueId(), session);
             }
             return session;

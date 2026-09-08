@@ -23,17 +23,8 @@
  */
 package com.saicone.mcgui.session;
 
-import com.saicone.mcgui.gui.LayoutGui;
-import com.saicone.mcgui.gui.AbstractGui;
 import com.saicone.mcgui.gui.Gui;
-import com.saicone.mcgui.util.PluginSource;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -44,226 +35,73 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public class GuiSession implements InventoryHolder {
-
-    public static final BiFunction<GuiSession, String, Component> PARSER = (session, string) -> {
-        return MiniMessage.miniMessage().deserialize(PlaceholderAPI.setPlaceholders(session.agent, string));
-    };
-
-    private static void run(@NotNull Runnable runnable) {
-        if (Bukkit.isPrimaryThread()) {
-            runnable.run();
-        } else {
-            Bukkit.getScheduler().runTask(PluginSource.unchecked(), runnable);
-        }
-    }
-
-    private final Player agent;
-
-    private volatile GuiView view;
-
-    private Gui last;
-    private Gui gui;
-    private Gui.Metadata meta;
-    private Inventory inventory;
-
-    private final AtomicReference<Consumer<String>> plainTextConsumer = new AtomicReference<>();
-    private final AtomicReference<Consumer<Component>> decoratedTextConsumer = new AtomicReference<>();
-
-    public GuiSession(@NotNull Player agent) {
-        this.agent = agent;
-    }
+public interface GuiSession extends InventoryHolder {
 
     @NotNull
-    public Player getAgent() {
-        return agent;
-    }
+    Player getAgent();
 
     @NotNull
-    public GuiView getView() {
-        if (view == null) {
-            synchronized (this) {
-                if (view == null) {
-                    view = new GuiView(agent.getOpenInventory());
-                }
-            }
-        }
-        return view;
-    }
+    GuiView getView();
 
     @NotNull
-    public Optional<Gui> getLast() {
-        return Optional.ofNullable(last);
-    }
+    Optional<Gui> getLast();
 
     @NotNull
-    @SuppressWarnings("unchecked")
-    public <T extends Gui> T getGui() {
-        return (T) gui;
-    }
+    <T extends Gui> T getGui();
 
     @NotNull
-    @SuppressWarnings("unchecked")
-    public <T extends Gui.Metadata> T getMeta() {
-        return (T) meta;
-    }
+    <T extends Gui.Metadata> T getMeta();
 
     @Override
     @NotNull
-    public Inventory getInventory() {
-        return inventory;
-    }
+    Inventory getInventory();
 
     @Nullable
     @Contract("!null -> !null")
-    public Component parse(@Nullable String string) {
-        if (string == null) {
-            return null;
-        }
-        return PARSER.apply(this, string);
-    }
+    Component parse(@Nullable String string);
 
     @NotNull
-    public List<Component> parse(@NotNull List<String> list) {
-        final List<Component> result = new ArrayList<>();
-        for (String element : list) {
-            result.add(parse(element));
-        }
-        return result;
-    }
+    List<Component> parse(@NotNull List<String> list);
 
-    public void rotate(@NotNull Gui gui) {
-        this.last = this.gui;
-        this.gui = gui;
-        this.meta = gui.createMetadata(this);
-        this.inventory = gui.createInventory(this);
-    }
+    void rotate(@NotNull Gui gui);
 
-    public void open() {
-        if (this.inventory != null) {
-            run(() -> this.agent.openInventory(this.inventory));
-        }
-    }
+    void open();
 
-    public void close() {
-        close(true);
-    }
+    void close();
 
-    public void close(boolean send) {
-        if (send) {
-            agent.closeInventory();
-        } else if (getView().getTopInventory().getHolder() == this) {
-            if (gui instanceof AbstractGui) {
-                ((AbstractGui) gui).execute(this, new InventoryCloseEvent(agent.getOpenInventory()));
-            }
-        }
-    }
+    void close(boolean send);
 
-    public void silentClose() {
-        meta.setSilentClose(true);
-        agent.closeInventory();
-    }
+    void silentClose();
 
-    public void update() {
-        gui.update(this);
-    }
+    void update();
 
-    public void updateTitle() {
-        gui.updateTitle(this);
-    }
+    void updateTitle();
 
-    public void updateInventory(@NotNull Inventory inventory) {
-        run(() -> {
-            final Inventory previous = this.inventory;
-            this.inventory = inventory;
-            for (HumanEntity viewer : new ArrayList<>(previous.getViewers())) {
-                viewer.openInventory(this.inventory);
-            }
-        });
-    }
+    void updateInventory(@NotNull Inventory inventory);
 
-    public void updateSlots(int... slots) {
-        gui.updateSlots(this, slots);
-    }
+    void updateSlots(int... slots);
 
-    public void updateItems(char... ids) {
-        if (gui instanceof LayoutGui) {
-            ((LayoutGui) gui).updateItems(this, ids);
-        }
-    }
+    void updateItems(char... ids);
 
-    public void execute(@NotNull InventoryCloseEvent event) {
-        if (meta.isSilentClose()) {
-            meta.setSilentClose(false);
-            return;
-        }
-        if (gui instanceof AbstractGui) {
-            ((AbstractGui) gui).execute(this, event);
-        }
-    }
+    void execute(@NotNull InventoryCloseEvent event);
 
-    public void execute(@NotNull InventoryClickEvent event) {
-        if (gui instanceof AbstractGui) {
-            ((AbstractGui) gui).execute(this, event);
-        }
-    }
+    void execute(@NotNull InventoryClickEvent event);
 
-    public void execute(@NotNull InventoryDragEvent event) {
-        if (gui instanceof AbstractGui) {
-            ((AbstractGui) gui).execute(this, event);
-        }
-    }
+    void execute(@NotNull InventoryDragEvent event);
 
-    public void listenPlainChat(@NotNull Consumer<String> consumer) {
-        this.plainTextConsumer.set(consumer);
-        silentClose();
-    }
+    void listenPlainChat(@NotNull Consumer<String> consumer);
 
-    public void listenDecoratedChat(@NotNull Consumer<Component> consumer) {
-        this.decoratedTextConsumer.set(consumer);
-        silentClose();
-    }
+    void listenDecoratedChat(@NotNull Consumer<Component> consumer);
 
-    public boolean consumePlainText(@NotNull String input) {
-        final Consumer<String> consumer = plainTextConsumer.getAndSet(null);
-        if (consumer != null) {
-            consumer.accept(input);
-            return true;
-        }
-        return false;
-    }
+    boolean consumePlainText(@NotNull String input);
 
-    public boolean consumePlainText(@NotNull Component input) {
-        final Consumer<String> consumer = plainTextConsumer.getAndSet(null);
-        if (consumer != null) {
-            consumer.accept(PlainTextComponentSerializer.plainText().serialize(input));
-            return true;
-        }
-        return false;
-    }
+    boolean consumePlainText(@NotNull Component input);
 
-    public boolean consumeDecoratedText(@NotNull String input) {
-        final Consumer<Component> consumer = decoratedTextConsumer.getAndSet(null);
-        if (consumer != null) {
-            consumer.accept(LegacyComponentSerializer.legacySection().deserialize(input));
-            return true;
-        }
-        return false;
-    }
+    boolean consumeDecoratedText(@NotNull String input);
 
-    public boolean consumeDecoratedText(@NotNull Component input) {
-        final Consumer<Component> consumer = decoratedTextConsumer.getAndSet(null);
-        if (consumer != null) {
-            consumer.accept(input);
-            return true;
-        }
-        return false;
-    }
+    boolean consumeDecoratedText(@NotNull Component input);
 }
