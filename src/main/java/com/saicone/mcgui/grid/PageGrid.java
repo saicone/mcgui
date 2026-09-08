@@ -25,7 +25,7 @@
 package com.saicone.mcgui.grid;
 
 import com.saicone.mcgui.session.GuiSession;
-import com.saicone.mcgui.gui.PageableItem;
+import com.saicone.mcgui.item.PageableGuiItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,9 +41,9 @@ public interface PageGrid {
     }
 
     @Nullable
-    <E> E element(@NotNull PageableItem<E> item, @NotNull GuiSession session, int slot);
+    <E> E element(@NotNull PageableGuiItem<E> item, @NotNull GuiSession session, int slot);
 
     @NotNull
-    <E> List<E> subList(@NotNull PageableItem<E> item, @NotNull GuiSession session);
+    <E> List<E> subList(@NotNull PageableGuiItem<E> item, @NotNull GuiSession session);
 
 }

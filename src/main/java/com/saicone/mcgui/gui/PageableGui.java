@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.saicone.mcgui.item;
+package com.saicone.mcgui.gui;
 
+import com.saicone.mcgui.item.GuiItem;
+import com.saicone.mcgui.item.PageableGuiItem;
 import com.saicone.mcgui.session.GuiSession;
-import com.saicone.mcgui.gui.LayoutGui;
-import com.saicone.mcgui.gui.PageableItem;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -42,8 +42,8 @@ public abstract class PageableGui extends LayoutGui {
 
     @Override
     protected void updateItem(@NotNull GuiSession session, char id, @NotNull GuiItem item) {
-        if (item instanceof PageableItem<?>) {
-            meta(session).itemList.remove((PageableItem<?>) item);
+        if (item instanceof PageableGuiItem<?>) {
+            meta(session).itemList.remove((PageableGuiItem<?>) item);
         }
         super.updateItem(session, id, item);
     }
@@ -56,8 +56,8 @@ public abstract class PageableGui extends LayoutGui {
     public static class Metadata extends LayoutGui.Metadata {
 
         int page = 0;
-        private final Map<PageableItem<?>, Integer> itemPage = new HashMap<>();
-        private final Map<PageableItem<?>, List<?>> itemList = new HashMap<>();
+        private final Map<PageableGuiItem<?>, Integer> itemPage = new HashMap<>();
+        private final Map<PageableGuiItem<?>, List<?>> itemList = new HashMap<>();
 
         public Metadata(@NotNull GuiSession session, @NotNull PageableGui gui) {
             super(session, gui);
@@ -67,7 +67,7 @@ public abstract class PageableGui extends LayoutGui {
             return page;
         }
 
-        public int getPage(@NotNull PageableItem<?> item) {
+        public int getPage(@NotNull PageableGuiItem<?> item) {
             if (item.isIndependent()) {
                 return getItemPage(item);
             } else {
@@ -75,7 +75,7 @@ public abstract class PageableGui extends LayoutGui {
             }
         }
 
-        private int getItemPage(@NotNull PageableItem<?> item) {
+        private int getItemPage(@NotNull PageableGuiItem<?> item) {
             Integer page = this.itemPage.get(item);
             if (page == null) {
                 page = 0;
@@ -86,7 +86,7 @@ public abstract class PageableGui extends LayoutGui {
 
         @NotNull
         @SuppressWarnings("unchecked")
-        public <E> List<E> getItemList(@NotNull PageableItem<E> item) {
+        public <E> List<E> getItemList(@NotNull PageableGuiItem<E> item) {
             List<?> list = itemList.get(item);
             if (list == null) {
                 list = item.getGrid().transform(item.createList(getSession()));
@@ -103,7 +103,7 @@ public abstract class PageableGui extends LayoutGui {
             setPage(operator.apply(getPage()));
         }
 
-        public void setPage(@NotNull PageableItem<?> item, int page) {
+        public void setPage(@NotNull PageableGuiItem<?> item, int page) {
             if (item.isIndependent()) {
                 setItemPage(item, page);
             } else {
@@ -111,7 +111,7 @@ public abstract class PageableGui extends LayoutGui {
             }
         }
 
-        public void setPage(@NotNull PageableItem<?> item, @NotNull UnaryOperator<Integer> operator) {
+        public void setPage(@NotNull PageableGuiItem<?> item, @NotNull UnaryOperator<Integer> operator) {
             if (item.isIndependent()) {
                 setItemPage(item, operator.apply(getItemPage(item)));
             } else {
@@ -119,7 +119,7 @@ public abstract class PageableGui extends LayoutGui {
             }
         }
 
-        private void setItemPage(@NotNull PageableItem<?> item, int page) {
+        private void setItemPage(@NotNull PageableGuiItem<?> item, int page) {
             this.itemPage.put(item, Math.max(0, page));
         }
     }

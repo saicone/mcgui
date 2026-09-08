@@ -21,38 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.saicone.mcgui.gui;
+package com.saicone.mcgui.item;
 
+import com.saicone.mcgui.gui.PageableGui;
 import com.saicone.mcgui.session.GuiSession;
 import com.saicone.mcgui.grid.PageGrid;
-import com.saicone.mcgui.item.GuiItem;
-import com.saicone.mcgui.item.PageableGui;
-import com.saicone.mcgui.item.VariantItem;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public abstract class PageableItem<E> implements GuiItem {
+public abstract class PageableGuiItem<E> implements GuiItem {
 
     private final char id;
     private final boolean independent;
     private final PageGrid grid;
 
-    public PageableItem(char id) {
+    public PageableGuiItem(char id) {
         this(id, false);
     }
 
-    public PageableItem(char id, boolean independent) {
+    public PageableGuiItem(char id, boolean independent) {
         this(id, independent, PageGrid.DEFAULT);
     }
 
-    public PageableItem(char id, @NotNull PageGrid grid) {
+    public PageableGuiItem(char id, @NotNull PageGrid grid) {
         this(id, false, grid);
     }
 
-    public PageableItem(char id, boolean independent, @NotNull PageGrid grid) {
+    public PageableGuiItem(char id, boolean independent, @NotNull PageGrid grid) {
         this.id = id;
         this.independent = independent;
         this.grid = grid;
@@ -85,7 +83,7 @@ public abstract class PageableItem<E> implements GuiItem {
             session.<PageableGui.Metadata>getMeta().setPage(this, page -> page + 1);
             session.update();
         });
-        return VariantItem.valueOf(PageableItem.this::hasNext, itemA, inactive);
+        return VariantGuiItem.valueOf(PageableGuiItem.this::hasNext, itemA, inactive);
     }
 
     @NotNull
@@ -99,7 +97,7 @@ public abstract class PageableItem<E> implements GuiItem {
             session.<PageableGui.Metadata>getMeta().setPage(this, page -> page - 1);
             session.update();
         });
-        return VariantItem.valueOf(session -> session.<PageableGui.Metadata>getMeta().getPage(this) > 0, itemA, inactive);
+        return VariantGuiItem.valueOf(session -> session.<PageableGui.Metadata>getMeta().getPage(this) > 0, itemA, inactive);
     }
 
     public boolean hasNext(@NotNull GuiSession session) {

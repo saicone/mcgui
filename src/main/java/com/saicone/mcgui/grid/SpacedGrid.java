@@ -25,8 +25,8 @@
 package com.saicone.mcgui.grid;
 
 import com.saicone.mcgui.session.GuiSession;
-import com.saicone.mcgui.item.PageableGui;
-import com.saicone.mcgui.gui.PageableItem;
+import com.saicone.mcgui.gui.PageableGui;
+import com.saicone.mcgui.item.PageableGuiItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +50,7 @@ public abstract class SpacedGrid implements PageGrid {
     protected abstract int spaces();
 
     @Override
-    public <E> @Nullable E element(@NotNull PageableItem<E> item, @NotNull GuiSession session, int slot) {
+    public <E> @Nullable E element(@NotNull PageableGuiItem<E> item, @NotNull GuiSession session, int slot) {
         final PageableGui.Metadata metadata = session.getMeta();
 
         int index = metadata.getIndex(slot);
@@ -68,7 +68,7 @@ public abstract class SpacedGrid implements PageGrid {
     }
 
     @Override
-    public @NotNull <E> List<E> subList(@NotNull PageableItem<E> item, @NotNull GuiSession session) {
+    public @NotNull <E> List<E> subList(@NotNull PageableGuiItem<E> item, @NotNull GuiSession session) {
         final PageableGui.Metadata metadata = session.getMeta();
 
         final int amount = metadata.getAmount(item.getId());

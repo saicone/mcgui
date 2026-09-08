@@ -32,16 +32,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-public abstract class VariantItem implements GuiItem {
+public abstract class VariantGuiItem implements GuiItem {
 
     @NotNull
-    public static VariantItem valueOf(@NotNull Predicate<GuiSession> predicate, @Nullable GuiItem itemA, @Nullable GuiItem itemB) {
+    public static VariantGuiItem valueOf(@NotNull Predicate<GuiSession> predicate, @Nullable GuiItem itemA, @Nullable GuiItem itemB) {
         return valueOf((session, slot) -> predicate.test(session), itemA, itemB);
     }
 
     @NotNull
-    public static VariantItem valueOf(@NotNull BiPredicate<GuiSession, Integer> predicate, @Nullable GuiItem itemA, @Nullable GuiItem itemB) {
-        return new VariantItem() {
+    public static VariantGuiItem valueOf(@NotNull BiPredicate<GuiSession, Integer> predicate, @Nullable GuiItem itemA, @Nullable GuiItem itemB) {
+        return new VariantGuiItem() {
             @Override
             public GuiItem get(@NotNull GuiSession session, int slot) {
                 if (predicate.test(session, slot)) {
