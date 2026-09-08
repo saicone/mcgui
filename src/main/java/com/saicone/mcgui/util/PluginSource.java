@@ -25,6 +25,7 @@ package com.saicone.mcgui.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.jar.JarFile;
 
+@ApiStatus.Internal
 public final class PluginSource {
 
     public static Plugin DEFAULT = null;
@@ -54,7 +56,7 @@ public final class PluginSource {
         try {
             return Objects.requireNonNull(get());
         } catch (Throwable t) {
-            throw new RuntimeException("There was an error while trying to get the current plugin, consider using 'com.saicone.mcgui.util.PluginSource.DEFAULT = this' on your plugin initialization to avoid this error", t);
+            throw new RuntimeException("There was an error while trying to get the current plugin, consider using '" + PluginSource.class.getName() + ".DEFAULT = this' on your plugin initialization to avoid this error", t);
         }
     }
 
