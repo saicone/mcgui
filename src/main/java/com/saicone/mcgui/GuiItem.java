@@ -57,6 +57,11 @@ public interface GuiItem {
     }
 
     @NotNull
+    static GuiItem valueOf(@NotNull ItemStack item, @NotNull Component name) {
+        return valueOf(item, name, List.of());
+    }
+
+    @NotNull
     static GuiItem valueOf(@NotNull Material display, @NotNull Component name, @NotNull List<Component> lore) {
         return valueOf(new ItemStack(display), name, lore);
     }
