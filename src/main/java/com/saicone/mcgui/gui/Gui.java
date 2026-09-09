@@ -26,7 +26,7 @@ package com.saicone.mcgui.gui;
 import com.saicone.mcgui.GuiListener;
 import com.saicone.mcgui.session.AbstractGuiSession;
 import com.saicone.mcgui.session.GuiSession;
-import com.saicone.mcgui.impl.GuiBuilderImpl;
+import com.saicone.mcgui.gui.impl.GuiBuilderImpl;
 import com.saicone.mcgui.item.GuiItem;
 import com.saicone.mcgui.util.PluginSource;
 import net.kyori.adventure.text.Component;

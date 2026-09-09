@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.saicone.mcgui.impl;
+package com.saicone.mcgui.gui.impl;
 
 import com.saicone.mcgui.gui.Gui;
 import com.saicone.mcgui.item.GuiItem;

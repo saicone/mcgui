@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.saicone.mcgui.impl;
+package com.saicone.mcgui.gui.impl;
 
+import com.saicone.mcgui.gui.AbstractGui;
 import com.saicone.mcgui.item.GuiItem;
 import com.saicone.mcgui.session.GuiSession;
-import com.saicone.mcgui.gui.LayoutGui;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -39,10 +39,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class LayoutGuiImpl extends LayoutGui {
+public class GuiImpl extends AbstractGui {
 
     private final Function<GuiSession, Component> title;
-    private final Function<GuiSession, String[]> layout;
 
     private final Consumer<GuiSession> onPreOpen ;
     private final Consumer<GuiSession> onOpen;
@@ -50,10 +49,9 @@ public class LayoutGuiImpl extends LayoutGui {
     private final BiConsumer<GuiSession, InventoryClickEvent> onPreClick;
     private final BiConsumer<GuiSession, InventoryClickEvent> onClick;
 
-    public LayoutGuiImpl(
+    public GuiImpl(
             @NotNull InventoryType type,
             @NotNull Function<GuiSession, Component> title,
-            @NotNull Function<GuiSession, String[]> layout,
             @NotNull Map<Integer, GuiItem> items,
             @Nullable Consumer<GuiSession> onPreOpen,
             @Nullable Consumer<GuiSession> onOpen,
@@ -63,17 +61,11 @@ public class LayoutGuiImpl extends LayoutGui {
             @NotNull Set<Flag> flags) {
         super(type, items, flags);
         this.title = title;
-        this.layout = layout;
         this.onPreOpen = onPreOpen;
         this.onOpen = onOpen;
         this.onClose = onClose;
         this.onPreClick = onPreClick;
         this.onClick = onClick;
-    }
-
-    @Override
-    public @NotNull String[] createLayout(@NotNull GuiSession session) {
-        return this.layout.apply(session);
     }
 
     @Override
