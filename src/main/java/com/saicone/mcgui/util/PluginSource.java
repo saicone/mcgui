@@ -28,6 +28,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,6 +48,7 @@ public final class PluginSource {
 
     public static Plugin DEFAULT = null;
     private static final Map<Class<?>, Plugin> CACHE = new HashMap<>();
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
     PluginSource() {
     }
@@ -74,22 +76,49 @@ public final class PluginSource {
             return CACHE.get(source);
         }
 
-        final Plugin plugin;
+        Plugin plugin = null;
         final CodeSource codeSource = source.getProtectionDomain().getCodeSource();
         final File file = new File(codeSource.getLocation().toURI());
         try (JarFile jar = new JarFile(file)) {
-            final InputStream input = jar.getInputStream(jar.stream().filter(entry -> entry.getName().equals("plugin.yml")).findFirst().orElseThrow());
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
-                final String pluginName = reader.lines()
-                        .filter(line -> line.startsWith("name:"))
-                        .map(line -> line.substring("name:".length()).split("#", 2)[0].trim())
-                        .findFirst()
-                        .orElseThrow();
-                plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+            final var entry = jar.stream().filter(e -> e.getName().equals("plugin.yml")).findFirst();
+            if (entry.isPresent()) {
+                try (InputStream input = jar.getInputStream(entry.get());
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+                    final String pluginName = reader.lines()
+                            .filter(line -> line.startsWith("name:"))
+                            .map(line -> line.substring("name:".length()).split("#", 2)[0].trim())
+                            .findFirst()
+                            .orElseThrow();
+                    plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+                }
+            }
+        }
+
+        if (plugin == null) {
+            final Class<?> caller = externalCaller();
+            if (caller != null && caller != source) {
+                plugin = get(caller);
             }
         }
 
         CACHE.put(source, plugin);
         return plugin;
+    }
+
+    @UnknownNullability
+    private static Class<?> externalCaller() {
+        return STACK_WALKER.walk(stream -> stream
+                .map(StackWalker.StackFrame::getDeclaringClass)
+                .filter(PluginSource::isExternal)
+                .findFirst()
+                .orElse(null));
+    }
+
+    private static boolean isExternal(@NotNull Class<?> clazz) {
+        final String name = clazz.getName();
+        return !name.startsWith("com.saicone.mcgui.")
+                && !name.startsWith("org.bukkit.")
+                && !name.startsWith("net.minecraft.")
+                && !name.startsWith("io.papermc.");
     }
 }
