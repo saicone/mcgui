@@ -238,24 +238,73 @@ public interface TextDisplay {
         @Override
         public Component get(@NotNull GuiSession session) {
             if (mini != null) {
-                return Mini.get().parse(session.pointer(), session.parse(mini));
+                return get0(session, mini);
             } else if (iterable != null) {
                 for (String s : iterable) {
                     if (s != null) {
-                        return Mini.get().parse(session.pointer(), session.parse(s));
+                        return get0(session, s);
                     }
                 }
             }
             return null;
         }
 
+        private Component get0(@NotNull GuiSession session, @NotNull String s) {
+            return get1(session, session.parse(s));
+        }
+
+        private Component get1(@NotNull GuiSession session, @NotNull String s) {
+            return Mini.get().parse(session.pointer(), s);
+        }
+
         @Override
         public void forEach(@NotNull GuiSession session, @NotNull Consumer<Component> consumer) {
             if (iterable != null) {
-                iterable.forEach(s -> consumer.accept(Mini.get().parse(session.pointer(), session.parse(s))));
+                iterable.forEach(s -> forEach0(session, consumer, s));
             } else if (mini != null) {
-                consumer.accept(Mini.get().parse(session.pointer(), session.parse(mini)));
+                forEach0(session, consumer, mini);
             }
+        }
+
+        private void forEach0(@NotNull GuiSession session, @NotNull Consumer<Component> consumer, @NotNull String s) {
+            final String input = session.parse(s);
+            final StringBuilder line = new StringBuilder();
+
+            for (int i = 0; i < input.length(); i++) {
+                final char c = input.charAt(i);
+
+                // newline
+                if (c == '\n') {
+                    consumer.accept(get1(session, line.toString()));
+                    line.setLength(0);
+                    continue;
+                }
+
+                // literal string newline
+                if (c == '\\' && i + 1 < input.length()) {
+                    final char next = input.charAt(i + 1);
+
+                    // escaped newline
+                    if (next == '\\' && i + 2 < input.length() && input.charAt(i + 2) == 'n') {
+                        line.append('\\').append('n');
+                        i += 2;
+                        continue;
+                    }
+
+                    // real newline
+                    if (next == 'n') {
+                        consumer.accept(get1(session, line.toString()));
+                        line.setLength(0);
+                        i++;
+                        continue;
+                    }
+                }
+
+                line.append(c);
+            }
+
+            // last line
+            consumer.accept(get1(session, line.toString()));
         }
     }
 }
