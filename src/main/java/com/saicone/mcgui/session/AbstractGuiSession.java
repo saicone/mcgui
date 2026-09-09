@@ -42,6 +42,7 @@ public class AbstractGuiSession implements GuiSession {
 
     private volatile GuiView view;
     private GuiHolder holder;
+    private final GuiDeque deque = new GuiDeque();
 
     private final AtomicReference<Consumer<String>> plainTextConsumer = new AtomicReference<>();
     private final AtomicReference<Consumer<Component>> decoratedTextConsumer = new AtomicReference<>();
@@ -81,13 +82,22 @@ public class AbstractGuiSession implements GuiSession {
         return holder;
     }
 
+    @NotNull
+    public GuiDeque deque() {
+        return deque;
+    }
+
     @Override
     public void push(@NotNull Gui gui) {
         if (this.holder != null && this.holder.gui().equals(gui)) {
             return;
         }
 
+        final GuiHolder latest = this.holder;
         this.holder = new GuiHolder(gui, gui.createMetadata(this), gui.createInventory(this));
+        if (latest != null) {
+            this.deque.push(latest);
+        }
     }
 
     @Override

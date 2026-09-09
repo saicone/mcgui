@@ -56,6 +56,11 @@ public class GuiHolder {
         this.inventory = inventory;
     }
 
+    @ApiStatus.Internal
+    public boolean isPersistent() {
+        return gui().has(Gui.Flag.PERSISTENT_HOLDER);
+    }
+
     @NotNull
     @SuppressWarnings("unchecked")
     public <T extends Gui> T gui() {

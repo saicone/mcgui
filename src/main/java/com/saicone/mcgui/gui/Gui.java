@@ -65,6 +65,8 @@ public interface Gui {
 
     void reload();
 
+    boolean has(@NotNull Flag flag);
+
     @NotNull
     default Metadata createMetadata(@NotNull GuiSession session) {
         return new Metadata(session, this);
@@ -174,7 +176,8 @@ public interface Gui {
     }
 
     enum Flag {
-        READ_ONLY;
+        READ_ONLY,
+        PERSISTENT_HOLDER;
     }
 
     interface Builder<T extends Builder<T>> {

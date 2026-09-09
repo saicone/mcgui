@@ -87,7 +87,8 @@ public abstract class AbstractGui implements Gui {
         // empty default method
     }
 
-    public boolean has(@NotNull Gui.Flag flag) {
+    @Override
+    public boolean has(@NotNull Flag flag) {
         return flags.contains(flag);
     }
 
