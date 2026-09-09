@@ -138,7 +138,7 @@ public abstract class LayoutGui extends AbstractGui {
 
     @Override
     public @NotNull LayoutGui.Metadata meta(@NotNull GuiSession session) {
-        return session.getMeta();
+        return session.meta();
     }
 
     public static class Metadata extends Gui.Metadata {

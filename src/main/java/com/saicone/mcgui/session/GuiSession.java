@@ -23,75 +23,154 @@
  */
 package com.saicone.mcgui.session;
 
+import com.saicone.mcgui.gui.AbstractGui;
 import com.saicone.mcgui.gui.Gui;
+import com.saicone.mcgui.gui.LayoutGui;
+import com.saicone.mcgui.util.Audiences;
+import com.saicone.mcgui.util.PAPI;
+import me.clip.placeholderapi.PlaceholderAPI;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public interface GuiSession extends InventoryHolder {
 
     @NotNull
-    Player getAgent();
+    Player viewer();
+
+    @Nullable
+    Player agent();
 
     @NotNull
-    GuiView getView();
+    default Player player() {
+        final Player agent = agent();
+        if (agent != null) {
+            return agent;
+        }
+        return viewer();
+    }
 
     @NotNull
-    Optional<Gui> getLast();
+    default Audience audience() {
+        return Audiences.player(viewer());
+    }
 
     @NotNull
-    <T extends Gui> T getGui();
+    default Audience pointer() {
+        return Audiences.player(player());
+    }
 
     @NotNull
-    <T extends Gui.Metadata> T getMeta();
+    GuiView view();
+
+    @NotNull
+    GuiHolder holder();
+
+    @NotNull
+    default <T extends Gui> T gui() {
+        return holder().gui();
+    }
+
+    @NotNull
+    default <T extends Gui.Metadata> T meta() {
+        return holder().meta();
+    }
 
     @Override
     @NotNull
-    Inventory getInventory();
-
-    @Nullable
-    @Contract("!null -> !null")
-    Component parse(@Nullable String string);
+    @ApiStatus.Internal
+    default Inventory getInventory() {
+        return holder().inventory();
+    }
 
     @NotNull
-    List<Component> parse(@NotNull List<String> list);
+    default String parse(@NotNull String str) {
+        String result = str;
+        if (PAPI.get().isPresent() && str.contains("%")) {
+            result = PlaceholderAPI.setPlaceholders(player(), str);
+        }
+        return result;
+    }
 
-    void rotate(@NotNull Gui gui);
+    @UnknownNullability
+    @Contract("!null -> !null")
+    default Component parse(@Nullable Component component) {
+        if (component == null) {
+            return null;
+        }
 
-    void open();
+        if (component instanceof TextComponent) {
+            final String content = ((TextComponent) component).content();
+            final String parsed = parse(content);
+            if (!content.equals(parsed)) {
+                component = ((TextComponent) component).content(parsed);
+            }
+        }
 
-    void close();
+        if (component.children().isEmpty()) {
+            return component;
+        }
 
-    void close(boolean send);
+        return component.children(component.children().stream().map(this::parse).toList());
+    }
 
-    void silentClose();
+    void push(@NotNull Gui gui);
 
-    void update();
+    default void openCurrentInventory() {
+        holder().open(viewer());
+    }
 
-    void updateTitle();
+    default void close() {
+        close(true);
+    }
 
-    void updateInventory(@NotNull Inventory inventory);
+    default void close(boolean send) {
+        if (send) {
+            viewer().closeInventory();
+        } else if (view().getTopInventory().getHolder() == this) {
+            if (holder().gui() instanceof AbstractGui gui) {
+                gui.execute(this, new InventoryCloseEvent(viewer().getOpenInventory()));
+            }
+        }
+    }
 
-    void updateSlots(int... slots);
+    default void silentClose() {
+        silentClose(true);
+    }
 
-    void updateItems(char... ids);
+    default void silentClose(boolean send) {
+        holder().meta().setSilentClose(true);
+        close(send);
+    }
 
-    void execute(@NotNull InventoryCloseEvent event);
+    default void update() {
+        holder().gui().update(this);
+    }
 
-    void execute(@NotNull InventoryClickEvent event);
+    default void updateTitle() {
+        holder().gui().updateTitle(this);
+    }
 
-    void execute(@NotNull InventoryDragEvent event);
+    default void updateSlots(int... slots) {
+        holder().gui().updateSlots(this, slots);
+    }
+
+    default void updateItems(char... ids) {
+        if (holder().gui() instanceof LayoutGui gui) {
+            gui.updateItems(this, ids);
+        }
+    }
 
     void listenPlainChat(@NotNull Consumer<String> consumer);
 

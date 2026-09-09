@@ -23,6 +23,7 @@
  */
 package com.saicone.mcgui;
 
+import com.saicone.mcgui.gui.AbstractGui;
 import com.saicone.mcgui.gui.Gui;
 import com.saicone.mcgui.session.GuiSession;
 import io.papermc.paper.event.player.AsyncChatDecorateEvent;
@@ -66,27 +67,28 @@ public final class GuiListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onClick(InventoryClickEvent event) {
         final InventoryHolder holder = event.getInventory().getHolder();
-        if (holder instanceof GuiSession) {
-            final GuiSession session = (GuiSession) holder;
-            session.execute(event);
+        if (holder instanceof GuiSession session && session.gui() instanceof AbstractGui gui) {
+            gui.execute(session, event);
         }
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onDrag(InventoryDragEvent event) {
         final InventoryHolder holder = event.getInventory().getHolder();
-        if (holder instanceof GuiSession) {
-            final GuiSession session = (GuiSession) holder;
-            session.execute(event);
+        if (holder instanceof GuiSession session && session.gui() instanceof AbstractGui gui) {
+            gui.execute(session, event);
         }
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onClose(InventoryCloseEvent event) {
         final InventoryHolder holder = event.getInventory().getHolder();
-        if (holder instanceof GuiSession) {
-            final GuiSession session = (GuiSession) holder;
-            session.execute(event);
+        if (holder instanceof GuiSession session && session.gui() instanceof AbstractGui gui) {
+            if (session.meta().isSilentClose()) {
+                session.meta().setSilentClose(false);
+                return;
+            }
+            gui.execute(session, event);
         }
     }
 

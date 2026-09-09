@@ -123,11 +123,11 @@ public abstract class AbstractGui implements Gui {
     public void open(@NotNull GuiSession session) {
         session.close(false);
 
-        session.rotate(this);
+        session.push(this);
         update(session);
 
         onPreOpen(session);
-        session.open();
+        session.openCurrentInventory();
         onOpen(session);
     }
 
@@ -148,7 +148,7 @@ public abstract class AbstractGui implements Gui {
         update(session, inventory);
 
         if (update) {
-            session.updateInventory(inventory);
+            session.holder().setInventory(inventory);
         }
     }
 

@@ -102,7 +102,7 @@ public interface Gui {
             for (int slot = 0; slot < inventory.getSize() && slot < sessionInventory.getSize(); slot++) {
                 inventory.setItem(slot, sessionInventory.getItem(slot));
             }
-            session.updateInventory(inventory);
+            session.holder().setInventory(inventory);
         }
     }
 
@@ -118,7 +118,7 @@ public interface Gui {
 
     @NotNull
     default Metadata meta(@NotNull GuiSession session) {
-        return session.getMeta();
+        return session.meta();
     }
 
     class Metadata {

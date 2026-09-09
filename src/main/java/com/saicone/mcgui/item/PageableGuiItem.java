@@ -80,7 +80,7 @@ public abstract class PageableGuiItem<E> implements GuiItem {
     @NotNull
     public GuiItem createNextPage(@NotNull GuiItem active, @NotNull GuiItem inactive) {
         final GuiItem itemA = active.executes((session, event) -> {
-            session.<PageableGui.Metadata>getMeta().setPage(this, page -> page + 1);
+            session.<PageableGui.Metadata>meta().setPage(this, page -> page + 1);
             session.update();
         });
         return VariantGuiItem.valueOf(PageableGuiItem.this::hasNext, itemA, inactive);
@@ -94,14 +94,14 @@ public abstract class PageableGuiItem<E> implements GuiItem {
     @NotNull
     public GuiItem createPreviousPage(@NotNull GuiItem active, @NotNull GuiItem inactive) {
         final GuiItem itemA = active.executes((session, event) -> {
-            session.<PageableGui.Metadata>getMeta().setPage(this, page -> page - 1);
+            session.<PageableGui.Metadata>meta().setPage(this, page -> page - 1);
             session.update();
         });
-        return VariantGuiItem.valueOf(session -> session.<PageableGui.Metadata>getMeta().getPage(this) > 0, itemA, inactive);
+        return VariantGuiItem.valueOf(session -> session.<PageableGui.Metadata>meta().getPage(this) > 0, itemA, inactive);
     }
 
     public boolean hasNext(@NotNull GuiSession session) {
-        final PageableGui.Metadata metadata = session.getMeta();
+        final PageableGui.Metadata metadata = session.meta();
 
         return metadata.getItemList(this).size() > metadata.getAmount(getId()) * (metadata.getPage(this) + 1);
     }

@@ -51,7 +51,7 @@ public abstract class SpacedGrid implements PageGrid {
 
     @Override
     public <E> @Nullable E element(@NotNull PageableGuiItem<E> item, @NotNull GuiSession session, int slot) {
-        final PageableGui.Metadata metadata = session.getMeta();
+        final PageableGui.Metadata metadata = session.meta();
 
         int index = metadata.getIndex(slot);
         if (index < 0) {
@@ -69,7 +69,7 @@ public abstract class SpacedGrid implements PageGrid {
 
     @Override
     public @NotNull <E> List<E> subList(@NotNull PageableGuiItem<E> item, @NotNull GuiSession session) {
-        final PageableGui.Metadata metadata = session.getMeta();
+        final PageableGui.Metadata metadata = session.meta();
 
         final int amount = metadata.getAmount(item.getId());
         final int fromIndex = amount + (this.spaces() * metadata.getPage(item));

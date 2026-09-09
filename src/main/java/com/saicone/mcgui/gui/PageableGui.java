@@ -50,7 +50,7 @@ public abstract class PageableGui extends LayoutGui {
 
     @Override
     public @NotNull Metadata meta(@NotNull GuiSession session) {
-        return session.getMeta();
+        return session.meta();
     }
 
     public static class Metadata extends LayoutGui.Metadata {
