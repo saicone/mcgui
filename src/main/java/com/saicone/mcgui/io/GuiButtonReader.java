@@ -24,11 +24,10 @@
 
 package com.saicone.mcgui.io;
 
-import com.saicone.mcgui.text.ComposedGuiTitle;
-import com.saicone.mcgui.text.GuiTitle;
-import com.saicone.mcgui.text.SimpleGuiTitle;
-import com.saicone.mcgui.text.TextDisplay;
-import org.intellij.lang.annotations.Language;
+import com.saicone.mcgui.button.ComposedGuiButton;
+import com.saicone.mcgui.button.GuiButton;
+import com.saicone.mcgui.button.SimpleGuiButton;
+import com.saicone.mcgui.item.ItemDisplay;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,66 +35,72 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class GuiTitleReader extends AbstractReader<GuiTitle> implements ConditionReader {
+public abstract class GuiButtonReader extends AbstractReader<GuiButton> implements ConditionReader, ExecutionReader {
 
-    public static final @Language("RegExp") String TITLE_PATTERN = "(gui-?)?title";
-
-    protected GuiTitleReader(@NotNull Object value) {
+    protected GuiButtonReader(@NotNull Object value) {
         super(value);
     }
 
     @Override
-    public GuiTitle read() {
+    public GuiButton read() {
         if (isMap()) {
-            return readSimpleTitle(this);
+            return readSimpleButton(this);
         } else if (isList()) {
-            return readComposedTitle(list());
+            return readComposedButton(list());
         } else {
-            return readTitle(value());
-        }
-    }
-
-    @Nullable
-    protected GuiTitle readTitle(@NotNull Object value) {
-        if (value instanceof Map<?, ?> map) {
-            return readSimpleTitle(map);
-        } else if (value instanceof List<?> list) {
-            return readComposedTitle(list);
-        } else {
-            return new SimpleGuiTitle(TRUE, TextDisplay.mini(value));
-        }
-    }
-
-    @Nullable
-    protected GuiTitle readSimpleTitle(@NotNull Map<?, ?> map) {
-        return readSimpleTitle(ofMap(map));
-    }
-
-    @Nullable
-    protected GuiTitle readSimpleTitle(@NotNull AbstractReader<?> reader) {
-        final Object condition = readAny(ConditionReader.CONDITION_PATTERN);
-        final Object title = reader.readAny(GuiTitleReader.TITLE_PATTERN);
-        if (title == null) {
             return null;
         }
-        return new SimpleGuiTitle(condition == null ? TRUE : readCondition(condition), TextDisplay.mini(title));
     }
 
     @Nullable
-    protected GuiTitle readComposedTitle(@NotNull List<?> list) {
-        final List<GuiTitle> titles = new ArrayList<>();
+    protected GuiButton readButton(@NotNull Object value) {
+        if (value instanceof Map<?, ?> map) {
+            return readSimpleButton(map);
+        } else if (value instanceof List<?> list) {
+            return readComposedButton(list);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    protected GuiButton readSimpleButton(@NotNull Map<?, ?> map) {
+        return readSimpleButton(ofMap(map));
+    }
+
+    @Nullable
+    protected GuiButton readSimpleButton(@NotNull AbstractReader<?> reader) {
+        final Object condition = readAny(ConditionReader.CONDITION_PATTERN);
+        final Object display = readAny(ItemDisplayReader.DISPLAY_PATTERN);
+        final Object execution = readAny(ExecutionReader.EXECUTION_PATTERN);
+
+        final ItemDisplay itemDisplay = ItemDisplayReader.read(display);
+        if (itemDisplay == null) {
+            return null;
+        }
+
+        return new SimpleGuiButton(
+                condition == null ? TRUE : readCondition(condition),
+                itemDisplay,
+                execution == null ? NOOP : readExecution(execution)
+        );
+    }
+
+    @Nullable
+    protected GuiButton readComposedButton(@NotNull List<?> list) {
+        final List<GuiButton> buttons = new ArrayList<>();
         for (Object element : list) {
-            final GuiTitle title = readTitle(element);
-            if (title != null) {
-                titles.add(title);
+            final GuiButton button = readButton(element);
+            if (button != null) {
+                buttons.add(button);
             }
         }
-        if (titles.isEmpty()) {
+        if (buttons.isEmpty()) {
             return null;
-        } else if (titles.size() == 1) {
-            return titles.get(0);
+        } else if (buttons.size() == 1) {
+            return buttons.get(0);
         } else {
-            return new ComposedGuiTitle(titles);
+            return new ComposedGuiButton(buttons);
         }
     }
 }

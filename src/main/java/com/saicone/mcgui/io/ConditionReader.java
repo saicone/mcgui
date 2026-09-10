@@ -28,14 +28,15 @@ import com.saicone.mcgui.session.GuiSession;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import java.util.function.Predicate;
 
-public interface ExecutionReader {
+public interface ConditionReader {
 
-    @Language("RegExp") String EXECUTION_PATTERN = "run|execut(e|ions?)|actions?|then";
-    Function<GuiSession, Boolean> NOOP = session -> true;
+    @Language("RegExp") String CONDITION_PATTERN = "if|(meet-?)?conditions?";
+    Predicate<GuiSession> TRUE = session -> true;
+    Predicate<GuiSession> FALSE = session -> false;
 
     @NotNull
-    Function<GuiSession, Boolean> readExecution(@NotNull Object object);
+    Predicate<GuiSession> readCondition(@NotNull Object object);
 
 }

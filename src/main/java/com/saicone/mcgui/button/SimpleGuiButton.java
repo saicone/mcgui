@@ -22,20 +22,31 @@
  * SOFTWARE.
  */
 
-package com.saicone.mcgui.io;
+package com.saicone.mcgui.button;
 
+import com.saicone.mcgui.item.ItemDisplay;
 import com.saicone.mcgui.session.GuiSession;
-import org.intellij.lang.annotations.Language;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
-public interface ExecutionReader {
+public record SimpleGuiButton(@NotNull Predicate<GuiSession> condition, @NotNull ItemDisplay display, @NotNull Function<GuiSession, Boolean> execution) implements GuiButton {
 
-    @Language("RegExp") String EXECUTION_PATTERN = "run|execut(e|ions?)|actions?|then";
-    Function<GuiSession, Boolean> NOOP = session -> true;
+    @Override
+    public boolean test(GuiSession session, Integer slot) {
+        return condition.test(session);
+    }
 
-    @NotNull
-    Function<GuiSession, Boolean> readExecution(@NotNull Object object);
+    @Override
+    public @NotNull ItemStack display(@NotNull GuiSession session, int slot) {
+        return display.get(session);
+    }
 
+    @Override
+    public void onClick(@NotNull GuiSession session, @NotNull InventoryClickEvent event) {
+        execution.apply(session);
+    }
 }

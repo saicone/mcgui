@@ -31,11 +31,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-public record SimpleGuiTitle(@NotNull Predicate<GuiSession> predicate, @NotNull TextDisplay title) implements GuiTitle {
+public record SimpleGuiTitle(@NotNull Predicate<GuiSession> condition, @NotNull TextDisplay title) implements GuiTitle {
 
     @Override
     public boolean test(@NotNull GuiSession session) {
-        return predicate.test(session);
+        return condition.test(session);
     }
 
     @Override

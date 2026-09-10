@@ -22,21 +22,35 @@
  * SOFTWARE.
  */
 
-package com.saicone.mcgui.io;
+package com.saicone.mcgui.button;
 
+import com.saicone.mcgui.item.GuiItem;
+import com.saicone.mcgui.item.VariantGuiItem;
 import com.saicone.mcgui.session.GuiSession;
-import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Predicate;
+import java.util.List;
 
-public interface PredicateReader {
+public final class ComposedGuiButton extends VariantGuiItem implements GuiButton {
 
-    @Language("RegExp") String IF_PATTERN = "if|(meet-?)?conditions?";
-    Predicate<GuiSession> TRUE = session -> true;
-    Predicate<GuiSession> FALSE = session -> false;
+    private final List<GuiButton> variants;
+
+    public ComposedGuiButton(@NotNull List<GuiButton> variants) {
+        this.variants = variants;
+    }
 
     @NotNull
-    Predicate<GuiSession> readPredicate(@NotNull Object object);
+    public List<GuiButton> variants() {
+        return variants;
+    }
 
+    @Override
+    public GuiItem get(@NotNull GuiSession session, int slot) {
+        for (GuiButton variant : variants) {
+            if (variant.test(session, slot)) {
+                return variant;
+            }
+        }
+        return null;
+    }
 }

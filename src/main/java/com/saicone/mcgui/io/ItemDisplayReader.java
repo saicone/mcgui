@@ -45,7 +45,7 @@ import java.util.Optional;
 
 public class ItemDisplayReader extends AbstractReader<ItemDisplay> {
 
-    public static final @Language("RegExp") String ITEM_PATTERN = "item(-?(stack|display))?";
+    public static final @Language("RegExp") String DISPLAY_PATTERN = "item(-?(stack|display))?|display(-?item)?";
     protected static final Lazy<Boolean> USE_RTAG_API = Lazy.init(() -> {
         try {
             Class.forName("com.saicone.rtag.util.SkullTexture");
@@ -54,6 +54,17 @@ public class ItemDisplayReader extends AbstractReader<ItemDisplay> {
             return false;
         }
     });
+
+    @UnknownNullability
+    public static ItemDisplay read(@Nullable Object object) {
+        if (object instanceof ConfigurationSection section) {
+            return read(section);
+        } else if (object instanceof Map<?, ?> map) {
+            return read(map);
+        } else {
+            return null;
+        }
+    }
 
     @UnknownNullability
     public static ItemDisplay read(@NotNull ConfigurationSection section) {
