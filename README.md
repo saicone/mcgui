@@ -67,6 +67,9 @@ pom.xml
 </dependencies>
 ```
 
+> [!IMPORTANT]  
+> Don't forget to [shade](https://gradleup.com/shadow/) the package `com.saicone.mcgui`.
+
 ## Sample
 
 ## Features

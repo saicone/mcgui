@@ -46,6 +46,13 @@ import java.util.jar.JarFile;
 @ApiStatus.Internal
 public final class PluginSource {
 
+    private static final String PACKAGE = new String(new char[] {'c', 'o', 'm', '.', 's', 'a', 'i', 'c', 'o', 'n', 'e', '.', 'm', 'c', 'g', 'u', 'i', '.'});
+    static {
+        if (PluginSource.class.getPackage().getName().startsWith(PACKAGE)) {
+            throw new IllegalStateException("MC Gui package (" + PACKAGE + ") is not shaded, if you are a plugin developer, please shade the MC Gui package to avoid conflicts with other plugins");
+        }
+    }
+
     public static Plugin DEFAULT = null;
     private static final Map<Class<?>, Plugin> CACHE = new HashMap<>();
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
