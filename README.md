@@ -1,6 +1,6 @@
 <h1 align="center">mcgui</h1>
 
-<h4 align="center">GUI library for Bukkit-based projects.</h4>
+<h4 align="center">Powerful GUI system for Bukkit-based projects.</h4>
 
 <p align="center">
     <a href="https://saic.one/discord">
@@ -9,21 +9,18 @@
     <a href="https://www.codefactor.io/repository/github/saicone/mcgui">
         <img src="https://www.codefactor.io/repository/github/saicone/mcgui/badge?style=flat-square"/>
     </a>
-    <a href="https://github.com/saicone/mcgui">
-        <img src="https://img.shields.io/github/languages/code-size/saicone/mcgui?logo=github&logoColor=white&style=flat-square"/>
-    </a>
-    <a href="https://central.sonatype.com/artifact/com.saicone/mcgui">
-        <img src="https://img.shields.io/maven-central/v/com.saicone/mcgui"/>
+    <a href="https://docs.saicone.com/mcgui/">
+        <img src="https://img.shields.io/badge/Saicone-mcgui%20Wiki-3b3bb0?logo=github&logoColor=white&style=flat-square"/>
     </a>
     <a href="https://javadoc.saicone.com/mcgui/">
         <img src="https://img.shields.io/badge/JavaDoc-Online-green?style=flat-square"/>
     </a>
-    <a href="https://docs.saicone.com/mcgui/">
-        <img src="https://img.shields.io/badge/Saicone-mcgui%20Wiki-3b3bb0?logo=github&logoColor=white&style=flat-square"/>
+    <a href="https://central.sonatype.com/artifact/com.saicone/mcgui">
+        <img src="https://img.shields.io/maven-central/v/com.saicone/mcgui-api"/>
     </a>
 </p>
 
-Feature extensive library to create custom GUIs for Bukkit-based projects.
+Feature extensive API to create custom GUIs for Bukkit-based projects.
 
 Usage of Bukkit API and Paper API for inventories, no packets involved.
 
@@ -31,9 +28,44 @@ Usage of Adventure API for text-related features.
 
 ## Dependency
 
-### Using gradle
+How to implement mcgui dependency in your project.
 
-### Using maven
+This dependency contains the following artifacts:
+* `mcgui-api` - API ready-to-use for your project, contains all the necessary classes to create GUIs.
+
+build.gradle
+```groovy
+repositories {
+    maven { url = uri('https://central.sonatype.com/repository/maven-snapshots') }
+}
+
+dependencies {
+    implementation 'com.saicone:mcgui-api:1.0-SNAPSHOT'
+}
+```
+
+build.gradle.kts
+```kotlin
+repositories {
+    maven("https://central.sonatype.com/repository/maven-snapshots")
+}
+
+dependencies {
+    implementation("com.saicone:mcgui-api:1.0-SNAPSHOT")
+}
+```
+
+pom.xml
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.saicone</groupId>
+        <artifactId>mcgui-api</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <scope>compile</scope>
+    </dependency>
+</dependencies>
+```
 
 ## Sample
 
