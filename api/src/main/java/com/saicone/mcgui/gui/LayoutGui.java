@@ -200,13 +200,14 @@ public abstract class LayoutGui extends AbstractGui {
                                 final String row = Metadata.this.getLayout()[this.rowIndex];
                                 final int column = row.indexOf(id, this.columnIndex);
                                 if (column >= 0) {
+                                    final int foundRow = this.rowIndex;
                                     if (column + 1 >= row.length()) {
                                         this.rowIndex++;
                                         this.columnIndex = 0;
                                     } else {
                                         this.columnIndex = column + 1;
                                     }
-                                    this.found = column + this.rowIndex * 9;
+                                    this.found = column + foundRow * 9;
                                     return true;
                                 } else {
                                     this.columnIndex = 0;
