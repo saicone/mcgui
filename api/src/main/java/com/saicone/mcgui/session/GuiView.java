@@ -237,14 +237,14 @@ public class GuiView {
         }
     }
 
-    private static final MethodHandle getProperty = method(int.class, "getProperty", InventoryView.Property.class);
+    private static final MethodHandle setProperty = method(boolean.class, "setProperty", InventoryView.Property.class, int.class);
 
     /**
-     * {@link InventoryView#getProperty(InventoryView.Property)}
+     * {@link InventoryView#setProperty(InventoryView.Property, int)}
      */
     public boolean setProperty(@NotNull InventoryView.Property prop, int value) {
         try {
-            return (boolean) getProperty.invokeExact(this.view, prop, value);
+            return (boolean) setProperty.invokeExact(this.view, prop, value);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -298,7 +298,9 @@ public class GuiView {
         }
         try {
             return MethodHandles.lookup().findVirtual(InventoryView.class, name, methodType);
-        } catch (Throwable ignored) { }
+        } catch (Throwable t) {
+            new RuntimeException("Failed to find method " + name + " with parameters " + Arrays.toString(parameterTypes) + " in InventoryView", t).printStackTrace();
+        }
         return null;
     }
 }
