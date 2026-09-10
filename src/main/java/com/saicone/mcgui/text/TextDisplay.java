@@ -107,6 +107,34 @@ public interface TextDisplay {
     }
 
     @NotNull
+    @SuppressWarnings("unchecked")
+    static TextDisplay mini(@Nullable Object object) {
+        if (object == null) {
+            return empty();
+        }
+        if (object instanceof Component component) {
+            return miniComponent(component);
+        } else if (object instanceof Iterable<?> iterable) {
+            List<String> list = null;
+            boolean first = true;
+            for (Object o : iterable) {
+                if (first) {
+                    if (o instanceof Component) {
+                        return miniComponent((Iterable<Component>) iterable);
+                    } else if (o instanceof String) {
+                        return mini((Iterable<String>) iterable);
+                    } else {
+                        list = new ArrayList<>();
+                    }
+                    first = false;
+                }
+                list.add(o == null ? "" : o.toString());
+            }
+            return first ? empty() : mini(list);
+        }
+        return mini(object.toString());
+    }
+    @NotNull
     static TextDisplay mini(@Nullable String component) {
         if (component == null) {
             return empty();
@@ -168,6 +196,12 @@ public interface TextDisplay {
 
     @Nullable
     Component get(@NotNull GuiSession session);
+
+    @NotNull
+    default Component getOrEmpty(@NotNull GuiSession session) {
+        final Component component = get(session);
+        return component == null ? Component.empty() : component;
+    }
 
     default void forEach(@NotNull GuiSession session, @NotNull Consumer<Component> consumer) {
         final Component component = get(session);
