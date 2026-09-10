@@ -44,7 +44,7 @@ public class LayoutGuiImpl extends LayoutGui {
     private final Function<GuiSession, Component> title;
     private final Function<GuiSession, String[]> layout;
 
-    private final Consumer<GuiSession> onPreOpen ;
+    private final Consumer<GuiSession> onPreOpen;
     private final Consumer<GuiSession> onOpen;
     private final BiConsumer<GuiSession, InventoryCloseEvent> onClose;
     private final BiConsumer<GuiSession, InventoryClickEvent> onPreClick;

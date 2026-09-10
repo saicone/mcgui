@@ -43,7 +43,7 @@ public class SimpleGuiImpl extends SimpleGui {
     private final Function<GuiSession, Component> title;
     private final Function<GuiSession, Integer> size;
 
-    private final Consumer<GuiSession> onPreOpen ;
+    private final Consumer<GuiSession> onPreOpen;
     private final Consumer<GuiSession> onOpen;
     private final BiConsumer<GuiSession, InventoryCloseEvent> onClose;
     private final BiConsumer<GuiSession, InventoryClickEvent> onPreClick;
