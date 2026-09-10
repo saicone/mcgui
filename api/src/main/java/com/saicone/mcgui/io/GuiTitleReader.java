@@ -73,7 +73,7 @@ public abstract class GuiTitleReader extends AbstractReader<GuiTitle> implements
 
     @Nullable
     protected GuiTitle readSimpleTitle(@NotNull AbstractReader<?> reader) {
-        final Object condition = readAny(ConditionReader.CONDITION_PATTERN);
+        final Object condition = reader.readAny(ConditionReader.CONDITION_PATTERN);
         final Object title = reader.readAny(GuiTitleReader.TITLE_PATTERN);
         if (title == null) {
             return null;

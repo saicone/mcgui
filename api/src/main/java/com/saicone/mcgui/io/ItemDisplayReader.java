@@ -112,7 +112,7 @@ public class ItemDisplayReader extends AbstractReader<ItemDisplay> {
 
         final Object lore = readAny("(display-?)?lore(-?lines?)?");
         if (lore != null) {
-            builder.text(TextDisplay.mini(lore));
+            builder.lore(TextDisplay.mini(lore));
         }
 
         final Boolean glowing = readBoolean("glow(ing)?|shin[ye]");

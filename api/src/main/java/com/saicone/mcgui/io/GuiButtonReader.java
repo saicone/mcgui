@@ -70,9 +70,9 @@ public abstract class GuiButtonReader extends AbstractReader<GuiButton> implemen
 
     @Nullable
     protected GuiButton readSimpleButton(@NotNull AbstractReader<?> reader) {
-        final Object condition = readAny(ConditionReader.CONDITION_PATTERN);
-        final Object display = readAny(ItemDisplayReader.DISPLAY_PATTERN);
-        final Object execution = readAny(ExecutionReader.EXECUTION_PATTERN);
+        final Object condition = reader.readAny(ConditionReader.CONDITION_PATTERN);
+        final Object display = reader.readAny(ItemDisplayReader.DISPLAY_PATTERN);
+        final Object execution = reader.readAny(ExecutionReader.EXECUTION_PATTERN);
 
         final ItemDisplay itemDisplay = ItemDisplayReader.read(display);
         if (itemDisplay == null) {
