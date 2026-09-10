@@ -27,12 +27,14 @@ package com.saicone.mcgui.io;
 import com.cryptomorin.xseries.XMaterial;
 import com.saicone.mcgui.item.ItemDisplay;
 import com.saicone.mcgui.text.TextDisplay;
+import com.saicone.mcgui.util.Lazy;
 import com.saicone.rtag.util.SkullTexture;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
@@ -43,9 +45,19 @@ import java.util.Optional;
 
 public class ItemDisplayReader extends AbstractReader<ItemDisplay> {
 
+    public static final @Language("RegExp") String ITEM_PATTERN = "item(-?(stack|display))?";
+    protected static final Lazy<Boolean> USE_RTAG_API = Lazy.init(() -> {
+        try {
+            Class.forName("com.saicone.rtag.util.SkullTexture");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    });
+
     @UnknownNullability
     public static ItemDisplay read(@NotNull ConfigurationSection section) {
-        return read(sectionToMap(section));
+        return new ItemDisplayReader(section).read();
     }
 
     @UnknownNullability
@@ -53,8 +65,8 @@ public class ItemDisplayReader extends AbstractReader<ItemDisplay> {
         return new ItemDisplayReader(map).read();
     }
 
-    public ItemDisplayReader(@NotNull Map<String, Object> map) {
-        super(map);
+    protected ItemDisplayReader(@NotNull Object value) {
+        super(value);
     }
 
     @Override
@@ -106,7 +118,7 @@ public class ItemDisplayReader extends AbstractReader<ItemDisplay> {
         if (model instanceof String modelStr) {
             builder.model(itemModel -> itemModel.model(Key.key(modelStr)));
         } else if (model instanceof Map<?, ?> modelMap) {
-            builder.model(itemModel -> readModel(itemModel, of(modelMap)));
+            builder.model(itemModel -> readModel(itemModel, ofMap(modelMap)));
         }
 
         final List<ItemFlag> flags = readItemFlagList("((item|hide)-?)?flags");
@@ -118,7 +130,7 @@ public class ItemDisplayReader extends AbstractReader<ItemDisplay> {
         if (tooltip instanceof String tooltipStr) {
             builder.tooltip(itemTooltip -> itemTooltip.style(Key.key(tooltipStr)));
         } else if (tooltip instanceof Map<?, ?> tooltipMap) {
-            builder.tooltip(itemTooltip -> readTooltip(itemTooltip, of(tooltipMap)));
+            builder.tooltip(itemTooltip -> readTooltip(itemTooltip, ofMap(tooltipMap)));
         }
 
         return builder;

@@ -51,19 +51,9 @@ public abstract class AbstractReader<T> {
         }
     });
 
-    protected static final Lazy<Boolean> USE_RTAG_API = Lazy.init(() -> {
-        try {
-            Class.forName("com.saicone.rtag.util.SkullTexture");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    });
-
     @NotNull
-    @SuppressWarnings("unchecked")
-    protected static AbstractReader<Object> of(@NotNull Map<?, ?> map) {
-        return new AbstractReader<>((Map<String, Object>) map) {
+    protected static AbstractReader<Object> ofMap(@NotNull Map<?, ?> map) {
+        return new AbstractReader<>(map) {
             @Override
             public Object read() {
                 throw new UnsupportedOperationException();
@@ -71,15 +61,39 @@ public abstract class AbstractReader<T> {
         };
     }
 
-    private final Map<String, Object> map;
+    private final Object value;
 
-    protected AbstractReader(@NotNull Map<String, Object> map) {
-        this.map = map;
+    protected AbstractReader(@NotNull Object value) {
+        if (value instanceof ConfigurationSection section) {
+            this.value = sectionToMap(section);
+        } else {
+            this.value = value;
+        }
+    }
+
+    public boolean isList() {
+        return value instanceof List<?>;
+    }
+
+    public boolean isMap() {
+        return value instanceof Map<?, ?>;
     }
 
     @NotNull
+    public Object value() {
+        return value;
+    }
+
+    @NotNull
+    @SuppressWarnings("unchecked")
+    public List<Object> list() {
+        return (List<Object>) value;
+    }
+
+    @NotNull
+    @SuppressWarnings("unchecked")
     public Map<String, Object> map() {
-        return map;
+        return (Map<String, Object>) value;
     }
 
     @UnknownNullability
@@ -88,7 +102,7 @@ public abstract class AbstractReader<T> {
     @Nullable
     protected Object readAny(@NotNull @Language("RegExp") String key) {
         final Pattern pattern = Pattern.compile(key, Pattern.CASE_INSENSITIVE);
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
+        for (Map.Entry<String, Object> entry : map().entrySet()) {
             if (pattern.matcher(entry.getKey()).matches()) {
                 return entry.getValue();
             }
@@ -205,7 +219,7 @@ public abstract class AbstractReader<T> {
     protected AbstractReader<Object> readSub(@NotNull @Language("RegExp") String key) {
         Object value = readAny(key);
         if (value instanceof Map<?, ?> sub) {
-            return of(sub);
+            return ofMap(sub);
         }
         return null;
     }
