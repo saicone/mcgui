@@ -29,6 +29,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +41,6 @@ public class AbstractGuiSession implements GuiSession {
     private final Player viewer;
     private Player agent;
 
-    private volatile GuiView view;
     private GuiHolder holder;
     private final GuiDeque deque = new GuiDeque();
 
@@ -66,15 +66,9 @@ public class AbstractGuiSession implements GuiSession {
     }
 
     @Override
+    @Contract("-> new")
     public @NotNull GuiView view() {
-        if (view == null) {
-            synchronized (this) {
-                if (view == null) {
-                    view = new GuiView(viewer.getOpenInventory());
-                }
-            }
-        }
-        return view;
+        return new GuiView(viewer.getOpenInventory());
     }
 
     @Override

@@ -72,6 +72,7 @@ public interface GuiSession extends InventoryHolder {
     }
 
     @NotNull
+    @Contract("-> new")
     GuiView view();
 
     @NotNull
