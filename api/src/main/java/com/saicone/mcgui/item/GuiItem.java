@@ -68,16 +68,25 @@ public interface GuiItem {
     }
 
     @NotNull
+    @SuppressWarnings("deprecation")
     static GuiItem valueOf(@NotNull ItemStack item, @NotNull Component name, @NotNull List<Component> lore) {
         final ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(name));
+        try {
+            meta.displayName(name);
+        } catch (Throwable t) {
+            meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(name));
+        }
         if (!lore.isEmpty()) {
-            final List<String> list = new ArrayList<>();
-            for (Component line : lore) {
-                list.add(LegacyComponentSerializer.legacySection().serialize(line));
+            try {
+                meta.lore(lore);
+            } catch (Throwable t) {
+                final List<String> legacyLore = new ArrayList<>(lore.size());
+                for (Component component : lore) {
+                    legacyLore.add(LegacyComponentSerializer.legacySection().serialize(component));
+                }
+                meta.setLore(legacyLore);
             }
-            meta.setLore(list);
         }
 
         item.setItemMeta(meta);
