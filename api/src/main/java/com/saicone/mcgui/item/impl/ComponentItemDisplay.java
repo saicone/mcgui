@@ -31,11 +31,12 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.CustomModelData;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import io.papermc.paper.datacomponent.item.TooltipDisplay;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +45,18 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ComponentItemDisplay extends AbstractItemDisplay {
+
+    private static final List<Key> HIDE_FLAGS = List.of(
+            Key.key("minecraft:enchantments"),
+            Key.key("minecraft:attribute_modifiers"),
+            Key.key("minecraft:unbreakable"),
+            Key.key("minecraft:can_break"),
+            Key.key("minecraft:can_place_on"),
+            Key.key("minecraft:stored_enchantments"),
+            Key.key("minecraft:dyed_color"),
+            Key.key("minecraft:trim"),
+            Key.key("minecraft:stored_enchantments") // PaperMC only
+    );
 
     public ComponentItemDisplay(
             @NotNull ItemStack item,
@@ -123,14 +136,6 @@ public class ComponentItemDisplay extends AbstractItemDisplay {
         }
 
         if (tooltip != null) {
-            if (tooltip.flags() != null) {
-                // TODO: Remove the use of ItemMeta
-                final ItemMeta meta = item.getItemMeta();
-                meta.removeItemFlags(ItemFlag.values());
-                meta.addItemFlags(tooltip.flags().toArray(new ItemFlag[0]));
-                item.setItemMeta(meta);
-            }
-
             if (tooltip.style() != null) {
                 item.setData(DataComponentTypes.TOOLTIP_STYLE, tooltip.style());
             }
@@ -138,6 +143,20 @@ public class ComponentItemDisplay extends AbstractItemDisplay {
             if (tooltip.hide() != null || tooltip.hidden() != null) {
                 final TooltipDisplay.Builder builder = TooltipDisplay.tooltipDisplay();
 
+                if (tooltip.flags() != null) {
+                    for (ItemFlag flag : tooltip.flags()) {
+                        final int ordinal = flag.ordinal();
+                        if (ordinal >= HIDE_FLAGS.size()) continue;
+                        if (ordinal == 5 && item.getType() != Material.ENCHANTED_BOOK) {
+                            builder.hideTooltip(true);
+                            continue;
+                        }
+                        final DataComponentType type = Registry.DATA_COMPONENT_TYPE.get(HIDE_FLAGS.get(ordinal));
+                        if (type != null) {
+                            builder.addHiddenComponents(type);
+                        }
+                    }
+                }
                 if (tooltip.hide() != null) {
                     builder.hideTooltip(tooltip.hide());
                 }

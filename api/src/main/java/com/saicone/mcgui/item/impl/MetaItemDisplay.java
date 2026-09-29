@@ -47,7 +47,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @SuppressWarnings("deprecation")
 public class MetaItemDisplay extends AbstractItemDisplay {
 
-    private static final ItemFlag HIDE_ADDITIONAL_TOOLTIP = ItemFlag.values()[5];
+    private static final ItemFlag[] ITEM_FLAGS = ItemFlag.values();
+    private static final ItemFlag HIDE_ADDITIONAL_TOOLTIP = ITEM_FLAGS[5];
+    private static final List<Key> HIDE_FLAGS = List.of(
+            Key.key("minecraft:enchantments"),
+            Key.key("minecraft:attribute_modifiers"),
+            Key.key("minecraft:unbreakable"),
+            Key.key("minecraft:can_break"),
+            Key.key("minecraft:can_place_on"),
+            Key.key("minecraft:stored_enchantments"),
+            Key.key("minecraft:dyed_color"),
+            Key.key("minecraft:trim")
+    );
 
     public MetaItemDisplay(
             @NotNull ItemStack item,
@@ -119,6 +130,10 @@ public class MetaItemDisplay extends AbstractItemDisplay {
 
             if (tooltip.hide() != null) {
                 hideTooltip(meta, tooltip.hide());
+            }
+
+            if (tooltip.hidden() != null) {
+                hideComponents(meta, tooltip.hidden());
             }
         }
 
@@ -206,5 +221,30 @@ public class MetaItemDisplay extends AbstractItemDisplay {
         try {
             meta.setHideTooltip(hide);
         } catch (Throwable ignored) { }
+    }
+
+    private void hideComponents(@NotNull ItemMeta meta, @NotNull List<Key> hidden) {
+        for (Key component : hidden) {
+            final ItemFlag flag = lookupItemFlag(component);
+            if (flag != null) {
+                meta.addItemFlags(flag);
+            }
+        }
+    }
+
+    @Nullable
+    private static ItemFlag lookupItemFlag(@NotNull Key component) {
+        final int index = HIDE_FLAGS.indexOf(component);
+        if (index >= 0 && index < ITEM_FLAGS.length) {
+            return ITEM_FLAGS[index];
+        }
+
+        final String name = "HIDE_" + component.value().replace("/", "_").toUpperCase();
+        for (ItemFlag flag : ITEM_FLAGS) {
+            if (flag.name().equals(name)) {
+                return flag;
+            }
+        }
+        return null;
     }
 }
