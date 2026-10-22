@@ -57,6 +57,20 @@ public class Mini {
         return INSTANCE;
     }
 
+    @NotNull
+    public static Component of(@NotNull String text) {
+        return get().parse(text);
+    }
+
+    @NotNull
+    public static List<Component> of(@NotNull List<String> texts) {
+        List<Component> components = new ArrayList<>();
+        for (String text : texts) {
+            components.add(get().parse(text));
+        }
+        return components;
+    }
+
     private final MiniMessage miniMessage;
 
     // lazy init value
