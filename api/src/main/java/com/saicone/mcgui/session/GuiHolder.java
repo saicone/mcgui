@@ -90,8 +90,13 @@ public class GuiHolder {
 
         // Update title for all viewers
         if (previous != null) {
-            for (HumanEntity viewer : new ArrayList<>(previous.getViewers())) {
-                openInventory(viewer, this.inventory);
+            meta.setSilentClose(true);
+            try {
+                for (HumanEntity viewer : new ArrayList<>(previous.getViewers())) {
+                    openInventory(viewer, this.inventory);
+                }
+            } finally {
+                meta.setSilentClose(false);
             }
         }
     }

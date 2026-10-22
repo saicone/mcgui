@@ -180,8 +180,10 @@ public abstract class AbstractGui implements Gui {
     }
 
     public void execute(@NotNull GuiSession session, @NotNull InventoryCloseEvent event) {
-        onClose(session, event);
-        session.holder().setMeta(null);
+        if (session.viewer().getUniqueId().equals(event.getPlayer().getUniqueId())) {
+            onClose(session, event);
+            session.holder().setMeta(null);
+        }
     }
 
     public void execute(@NotNull GuiSession session, @NotNull InventoryClickEvent event) {
