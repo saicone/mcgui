@@ -54,43 +54,22 @@ public interface GuiItem {
 
     @NotNull
     static GuiItem valueOf(@NotNull Material display, @NotNull Component name) {
-        return valueOf(display, name, List.of());
+        return valueOf(Display.item(display, name));
     }
 
     @NotNull
     static GuiItem valueOf(@NotNull ItemStack item, @NotNull Component name) {
-        return valueOf(item, name, List.of());
+        return valueOf(Display.item(item, name));
     }
 
     @NotNull
     static GuiItem valueOf(@NotNull Material display, @NotNull Component name, @NotNull List<Component> lore) {
-        return valueOf(new ItemStack(display), name, lore);
+        return valueOf(Display.item(display, name, lore));
     }
 
     @NotNull
-    @SuppressWarnings("deprecation")
     static GuiItem valueOf(@NotNull ItemStack item, @NotNull Component name, @NotNull List<Component> lore) {
-        final ItemMeta meta = item.getItemMeta();
-
-        try {
-            meta.displayName(name);
-        } catch (Throwable t) {
-            meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(name));
-        }
-        if (!lore.isEmpty()) {
-            try {
-                meta.lore(lore);
-            } catch (Throwable t) {
-                final List<String> legacyLore = new ArrayList<>(lore.size());
-                for (Component component : lore) {
-                    legacyLore.add(LegacyComponentSerializer.legacySection().serialize(component));
-                }
-                meta.setLore(legacyLore);
-            }
-        }
-
-        item.setItemMeta(meta);
-        return valueOf(item);
+        return valueOf(Display.item(item, name, lore));
     }
 
     @NotNull
@@ -207,5 +186,49 @@ public interface GuiItem {
                 return EMPTY_ITEM;
             }
         };
+    }
+
+    class Display {
+        @NotNull
+        public static ItemStack item(@NotNull Material display, @NotNull Component name) {
+            return item(display, name, List.of());
+        }
+
+        @NotNull
+        public static ItemStack item(@NotNull ItemStack item, @NotNull Component name) {
+            return item(item, name, List.of());
+        }
+
+        @NotNull
+        public static ItemStack item(@NotNull Material display, @NotNull Component name, @NotNull List<Component> lore) {
+            return item(new ItemStack(display), name, lore);
+        }
+
+        @NotNull
+        @SuppressWarnings("deprecation")
+        public static ItemStack item(@NotNull ItemStack item, @NotNull Component name, @NotNull List<Component> lore) {
+            final ItemMeta meta = item.getItemMeta();
+
+            try {
+                meta.displayName(name);
+            } catch (Throwable t) {
+                meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(name));
+            }
+            if (!lore.isEmpty()) {
+                try {
+                    meta.lore(lore);
+                } catch (Throwable t) {
+                    final List<String> legacyLore = new ArrayList<>(lore.size());
+                    for (Component component : lore) {
+                        legacyLore.add(LegacyComponentSerializer.legacySection().serialize(component));
+                    }
+                    meta.setLore(legacyLore);
+                }
+            }
+
+            item.setItemMeta(meta);
+
+            return item;
+        }
     }
 }
