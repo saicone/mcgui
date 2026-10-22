@@ -25,12 +25,14 @@ package com.saicone.mcgui.gui;
 
 import com.saicone.mcgui.item.GuiItem;
 import com.saicone.mcgui.item.PageableGuiItem;
+import com.saicone.mcgui.item.VariantGuiItem;
 import com.saicone.mcgui.session.GuiSession;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 public abstract class PageableGui extends LayoutGui {
@@ -51,6 +53,52 @@ public abstract class PageableGui extends LayoutGui {
     @Override
     public @NotNull Metadata meta(@NotNull GuiSession session) {
         return session.meta();
+    }
+
+    protected void nextPageItem(char id, @NotNull GuiItem item) {
+        nextPageItem(id, item, item);
+    }
+
+    protected void nextPageItem(char id, @NotNull GuiItem active, @NotNull GuiItem inactive) {
+        nextPageItem(id, active, inactive, session -> true);
+    }
+
+    protected void nextPageItem(char id, @NotNull GuiItem item, int maxPage) {
+        nextPageItem(id, item, item, maxPage);
+    }
+
+    protected void nextPageItem(char id, @NotNull GuiItem active, @NotNull GuiItem inactive, int maxPage) {
+        nextPageItem(id, active, inactive, session -> {
+            final PageableGui.Metadata metadata = session.meta();
+
+            return maxPage > metadata.getPage() + 1;
+        });
+    }
+
+    protected void nextPageItem(char id, @NotNull GuiItem item, @NotNull Predicate<GuiSession> predicate) {
+        nextPageItem(id, item, item, predicate);
+    }
+
+    protected void nextPageItem(char id, @NotNull GuiItem active, @NotNull GuiItem inactive, @NotNull Predicate<GuiSession> predicate) {
+        final GuiItem itemA = active.executes((session, event) -> {
+            session.<PageableGui.Metadata>meta().setPage(page -> page + 1);
+            session.update();
+        });
+
+        item((int) id, VariantGuiItem.valueOf(predicate, itemA, inactive));
+    }
+
+    protected void previousPageItem(char id, @NotNull GuiItem item) {
+        previousPageItem(id, item, item);
+    }
+
+    protected void previousPageItem(char id, @NotNull GuiItem active, @NotNull GuiItem inactive) {
+        final GuiItem itemA = active.executes((session, event) -> {
+            session.<PageableGui.Metadata>meta().setPage(page -> page - 1);
+            session.update();
+        });
+
+        item((int) id, VariantGuiItem.valueOf(session -> session.<PageableGui.Metadata>meta().getPage() > 0, itemA, inactive));
     }
 
     public static class Metadata extends LayoutGui.Metadata {
