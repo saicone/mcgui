@@ -32,6 +32,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -75,6 +76,11 @@ public class GuiHolder {
     @NotNull
     public Inventory inventory() {
         return inventory;
+    }
+
+    @ApiStatus.Internal
+    public void setMeta(@Nullable Gui.Metadata meta) {
+        this.meta = meta;
     }
 
     @ApiStatus.Internal

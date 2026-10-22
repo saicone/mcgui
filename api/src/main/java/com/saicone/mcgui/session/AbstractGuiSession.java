@@ -84,6 +84,10 @@ public class AbstractGuiSession implements GuiSession {
     @Override
     public void push(@NotNull Gui gui) {
         if (this.holder != null && this.holder.gui().equals(gui)) {
+            // NOTE: I know, meta() is marked as @NotNull, so consider this check as internal code
+            if (this.holder.meta() == null) {
+                this.holder.setMeta(gui.createMetadata(this));
+            }
             return;
         }
 
