@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public abstract class AbstractGui implements Gui {
 
@@ -121,10 +122,11 @@ public abstract class AbstractGui implements Gui {
     }
 
     @Override
-    public void open(@NotNull GuiSession session) {
+    public void open(@NotNull GuiSession session, @NotNull Consumer<GuiSession> initialization) {
         session.close(false);
 
         session.push(this);
+        initialization.accept(session);
         update(session);
 
         onPreOpen(session);

@@ -87,12 +87,21 @@ public interface Gui {
 
     @NotNull
     default GuiSession open(@NotNull Player player) {
+        return open(player, s -> {});
+    }
+
+    @NotNull
+    default GuiSession open(@NotNull Player player, @NotNull Consumer<GuiSession> initialization) {
         final GuiSession session = Registry.get(player);
-        open(session);
+        open(session, initialization);
         return session;
     }
 
-    void open(@NotNull GuiSession session);
+    default void open(@NotNull GuiSession session) {
+        open(session, s -> {});
+    }
+
+    void open(@NotNull GuiSession session, @NotNull Consumer<GuiSession> initialization);
 
     void update(@NotNull GuiSession session);
 
