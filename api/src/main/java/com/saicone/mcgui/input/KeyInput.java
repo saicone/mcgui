@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class KeyInput {
 
@@ -49,18 +50,34 @@ public abstract class KeyInput {
     public static final int DRAG = 5;
     public static final int DOUBLE_CLICK = 6;
 
-    public static final KeyInput UNKNOWN = new KeyInput(-1, (byte) -1, null) {{
-        try {
-            bukkitType = ClickType.valueOf("UNKNOWN");
-        } catch (Throwable ignored) { }
-    }};
-
     private static final List<KeyInput> VALUES = new ArrayList<>();
     private static final Map<Integer, Map<Integer, KeyInput>> ENTRIES = new HashMap<>();
+    private static final AtomicBoolean BOOT = new AtomicBoolean(false);
+
+    private static void boot() {
+        if (BOOT.compareAndExchange(false, true)) {
+            final KeyInput[] keys = new KeyInput[] {
+                    Click.PICKUP_LEFT,
+                    Shift.LEFT,
+                    Swap.NUMBER_KEY_1,
+                    MiddleClick.CLONE,
+                    Throw.DROP,
+                    Drag.START_LEFT,
+                    DoubleClick.PICKUP_ALL
+            };
+        }
+    }
 
     @NotNull
     public static List<KeyInput> values() {
+        boot();
         return VALUES;
+    }
+
+    @NotNull
+    private static Map<Integer, Map<Integer, KeyInput>> entries() {
+        boot();
+        return ENTRIES;
     }
 
     private static final List<String> CONTAINER_INPUTS = List.of(
@@ -89,7 +106,7 @@ public abstract class KeyInput {
 
     @NotNull
     public static KeyInput from(@NotNull Number mode, @NotNull Number button, @Nullable Number slotNum) {
-        final var map = ENTRIES.get(mode.intValue());
+        final var map = entries().get(mode.intValue());
         if (map != null) {
             final KeyInput input;
             if (slotNum != null && slotNum.intValue() == -999) {
@@ -150,6 +167,13 @@ public abstract class KeyInput {
         return (slot.shortValue() << 8) | (button.byteValue() & 0xFF);
     }
 
+    // boot
+    public static final KeyInput UNKNOWN = new KeyInput(-1, (byte) -1, null) {{
+        try {
+            bukkitType = ClickType.valueOf("UNKNOWN");
+        } catch (Throwable ignored) { }
+    }};
+
     private final int mode;
     private final byte button;
     private final Short slot;
@@ -162,6 +186,9 @@ public abstract class KeyInput {
         this.button = (byte) button;
         this.slot = slot == null ? null : slot.shortValue();
 
+        if (this.mode < 0) {
+            return;
+        }
         VALUES.add(this);
         ENTRIES.computeIfAbsent(this.mode, k -> new HashMap<>()).put(combine(this.button, this.slot), this);
     }
