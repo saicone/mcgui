@@ -299,7 +299,7 @@ public class GuiView {
         try {
             return MethodHandles.lookup().findVirtual(InventoryView.class, name, methodType);
         } catch (Throwable t) {
-            new RuntimeException("Failed to find method " + name + " with parameters " + Arrays.toString(parameterTypes) + " in InventoryView", t).printStackTrace();
+            //new RuntimeException("Failed to find method " + name + " with parameters " + Arrays.toString(parameterTypes) + " in InventoryView", t).printStackTrace();
         }
         return null;
     }

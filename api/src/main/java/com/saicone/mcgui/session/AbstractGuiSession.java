@@ -88,7 +88,7 @@ public class AbstractGuiSession implements GuiSession {
         }
 
         final GuiHolder latest = this.holder;
-        this.holder = new GuiHolder(gui, gui.createMetadata(this), gui.createInventory(this));
+        this.holder = new GuiHolder(gui, gui.createMetadata(this));
         if (latest != null) {
             this.deque.push(latest);
         }

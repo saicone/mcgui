@@ -50,10 +50,9 @@ public class GuiHolder {
     protected Gui.Metadata meta;
     protected Inventory inventory;
 
-    public GuiHolder(@NotNull Gui gui, @NotNull Gui.Metadata meta, @NotNull Inventory inventory) {
+    public GuiHolder(@NotNull Gui gui, @NotNull Gui.Metadata meta) {
         this.gui = gui;
         this.meta = meta;
-        this.inventory = inventory;
     }
 
     @ApiStatus.Internal
